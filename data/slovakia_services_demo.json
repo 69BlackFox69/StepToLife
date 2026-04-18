@@ -1,0 +1,69 @@
+[
+  {
+    "service_id": "KE_NGO_001",
+    "name": "Charita Kosice - Charitny dom Bosakova",
+    "category": "shelter",
+    "city": "Kosice",
+    "address": {
+      "street": "Bosakova",
+      "postal_code": "04001",
+      "country": "Slovakia"
+    },
+    "contact": {
+      "phone": "+421911279583",
+      "email": null,
+      "website": "https://www.charita-ke.sk"
+    },
+    "working_hours": {
+      "monday": "07:30-16:00",
+      "tuesday": "07:30-16:00",
+      "wednesday": "07:30-16:00",
+      "thursday": "07:30-16:00",
+      "friday": "07:30-16:00",
+      "saturday": "07:30-16:00",
+      "sunday": "07:30-16:00"
+    },
+    "access_conditions": "Pomoshch bezdomnym, predvaritelny kontakt po telefonu",
+    "services_provided": [
+      "temporary housing",
+      "social counseling"
+    ],
+    "languages_supported": [
+      "Slovak",
+      "Ukrainian"
+    ]
+  },
+  {
+    "service_id": "SK_EMERGENCY_112",
+    "name": "Emergency line 112",
+    "category": "emergency",
+    "city": "Kosice",
+    "address": {
+      "street": null,
+      "postal_code": null,
+      "country": "Slovakia"
+    },
+    "contact": {
+      "phone": "112",
+      "email": null,
+      "website": null
+    },
+    "working_hours": {
+      "monday": "00:00-23:59",
+      "tuesday": "00:00-23:59",
+      "wednesday": "00:00-23:59",
+      "thursday": "00:00-23:59",
+      "friday": "00:00-23:59",
+      "saturday": "00:00-23:59",
+      "sunday": "00:00-23:59"
+    },
+    "access_conditions": "Use in immediate danger to life or health",
+    "services_provided": [
+      "emergency coordination"
+    ],
+    "languages_supported": [
+      "Slovak",
+      "English"
+    ]
+  }
+]

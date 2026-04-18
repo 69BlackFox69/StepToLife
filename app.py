@@ -10,6 +10,7 @@ from agents.housing_agent import HousingAgent
 from agents.documents_agent import DocumentsAgent
 from agents.benefits_agent import BenefitsAgent
 from agents.emergency_agent import EmergencyAgent
+from services import ResourceResolver, infer_city_from_message
 from config import config
 import json
 from datetime import datetime
@@ -57,6 +58,7 @@ except Exception as e:
 
 # Хранилище пользовательских сессий
 user_sessions = {}
+resource_resolver = ResourceResolver()
 
 @app.route('/')
 def index():
@@ -284,6 +286,10 @@ def chat_housing():
         response = housing_agent.process(message, user_sessions[user_id]['housing_history'])
         user_sessions[user_id]['housing_history'].append({'role': 'assistant', 'content': response['message']})
 
+        if 'resource_source' in response:
+            user_sessions[user_id]['last_resource_source'] = response['resource_source']
+            print(f"[INFO] housing source={response['resource_source']} user={user_id}")
+
         return jsonify(response)
     except Exception as e:
         print(f"[ERROR] Ошибка в chat_housing: {e}")
@@ -314,6 +320,10 @@ def chat_documents():
         user_sessions[user_id]['documents_history'].append({'role': 'user', 'content': message})
         response = documents_agent.process(message, user_sessions[user_id]['documents_history'])
         user_sessions[user_id]['documents_history'].append({'role': 'assistant', 'content': response['message']})
+
+        if 'resource_source' in response:
+            user_sessions[user_id]['last_resource_source'] = response['resource_source']
+            print(f"[INFO] documents source={response['resource_source']} user={user_id}")
 
         return jsonify(response)
     except Exception as e:
@@ -346,6 +356,10 @@ def chat_benefits():
         response = benefits_agent.process(message, user_sessions[user_id]['benefits_history'])
         user_sessions[user_id]['benefits_history'].append({'role': 'assistant', 'content': response['message']})
 
+        if 'resource_source' in response:
+            user_sessions[user_id]['last_resource_source'] = response['resource_source']
+            print(f"[INFO] benefits source={response['resource_source']} user={user_id}")
+
         return jsonify(response)
     except Exception as e:
         print(f"[ERROR] Ошибка в chat_benefits: {e}")
@@ -377,6 +391,10 @@ def chat_emergency():
         response = emergency_agent.process(message, user_sessions[user_id]['emergency_history'])
         user_sessions[user_id]['emergency_history'].append({'role': 'assistant', 'content': response['message']})
 
+        if 'resource_source' in response:
+            user_sessions[user_id]['last_resource_source'] = response['resource_source']
+            print(f"[INFO] emergency source={response['resource_source']} user={user_id}")
+
         return jsonify(response)
     except Exception as e:
         print(f"[ERROR] Ошибка в chat_emergency: {e}")
@@ -394,6 +412,34 @@ def get_session(user_id):
     
     except Exception as e:
         print(f"[ERROR] Ошибка в get_session: {e}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/resources/search', methods=['GET'])
+def search_resources():
+    """Поиск проверенных ресурсов из локальной демо-базы (strict source)"""
+    try:
+        city = request.args.get('city', 'Kosice')
+        category = request.args.get('category', '')
+        message_hint = request.args.get('message', '')
+
+        if message_hint:
+            city = infer_city_from_message(message_hint, default_city=city)
+
+        categories = [category] if category else []
+        services = resource_resolver.find_services(categories=categories, city=city, limit=10)
+
+        return jsonify({
+            'success': True,
+            'source': 'verified_db',
+            'city': city,
+            'count': len(services),
+            'services': services,
+        })
+
+    except Exception as e:
+        print(f"[ERROR] Ошибка в search_resources: {e}")
         print(traceback.format_exc())
         return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
 
