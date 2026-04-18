@@ -89,15 +89,11 @@ async function sendInitialMessage() {
         if (data.success) {
             addMessageToChat('initial-chat', data.message, 'assistant');
 
-            // Check if user knows Slovak
-            if (data.knows_slovak !== undefined) {
-                knowsSlovak = data.knows_slovak;
-                if (knowsSlovak) {
-                    addMessageToChat('initial-chat', '✓ Отлично! Так как вы знаете словацкий язык, вы можете переходить сразу к резюме и поиску работы.', 'assistant');
-                } else {
-                    addMessageToChat('initial-chat', 'Понимаю. Рекомендую перейти на вкладку "Словацкий язык", чтобы научиться основам.', 'assistant');
-                }
+            // Показываем пошаговый план если он был сгенерирован
+            if (data.plan_generated && data.action_plan) {
+                displayActionPlan('initial-chat', data.action_plan);
             }
+
         } else {
             addMessageToChat('initial-chat', 'Ошибка: ' + data.message, 'assistant');
         }
@@ -263,6 +259,53 @@ function displayJobSuggestions(suggestions) {
     });
 
     jobsList.style.display = 'block';
+}
+
+function displayActionPlan(chatId, plan) {
+    const chatMessages = document.getElementById(chatId);
+    const planDiv = document.createElement('div');
+    planDiv.className = 'action-plan';
+    
+    // Заголовок плана
+    let planHTML = `
+        <div class="plan-header">
+            <h3>${plan.title}</h3>
+            <p class="plan-intro">${plan.intro}</p>
+        </div>
+        <div class="plan-steps">
+    `;
+    
+    // Шаги плана
+    plan.steps.forEach((step, index) => {
+        planHTML += `
+            <div class="plan-step">
+                <div class="step-badge">${step.number}</div>
+                <div class="step-content">
+                    <h4>
+                        <span class="step-tab-badge">${step.tab}</span>
+                        ${step.title}
+                    </h4>
+                    <p>${step.description}</p>
+                </div>
+            </div>
+        `;
+    });
+    
+    planHTML += `</div>`;
+    
+    // Время выполнения
+    planHTML += `<div class="plan-time">⏱️ Примерное время: ${plan.estimated_time}</div>`;
+    
+    // Специальный совет если есть
+    if (plan.special_advice) {
+        planHTML += `<div class="plan-advice">${plan.special_advice}</div>`;
+    }
+    
+    planDiv.innerHTML = planHTML;
+    chatMessages.appendChild(planDiv);
+    
+    // Auto scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // ===== CHAT UTILITIES =====
