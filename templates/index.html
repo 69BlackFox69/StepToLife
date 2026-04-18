@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepToLife - Поддержка в трудоустройстве</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>StepToLife</h1>
+            <p class="subtitle">Ваш путь к успешной карьере в Словакии</p>
+        </header>
+
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="initial">Начало</button>
+                <button class="tab-btn" data-tab="language">Словацкий язык</button>
+                <button class="tab-btn" data-tab="resume">Резюме</button>
+                <button class="tab-btn" data-tab="jobs">Работа</button>
+            </div>
+
+            <!-- TAB 1: Начальная консультация -->
+            <div class="tab-content active" id="initial">
+                <div class="tab-header">
+                    <h2>Планирование вашего пути</h2>
+                    <p>Расскажите нам о ваших целях и текущей ситуации</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="initial-chat">
+                        <div class="message assistant">
+                            <p>Здравствуйте! Я помощник StepToLife. Помогу вам найти работу в Словакии. С чего вы хотите начать? Расскажите о ваших целях и текущей ситуации.</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="initial-input" class="chat-input" placeholder="Введите сообщение..." />
+                            <button class="send-btn" onclick="sendInitialMessage()">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Обучение словацкому -->
+            <div class="tab-content" id="language">
+                <div class="tab-header">
+                    <h2>Изучение словацкого языка</h2>
+                    <p>Микро-уроки для трудоустройства</p>
+                </div>
+
+                <div class="language-settings">
+                    <label>Уровень обучения:</label>
+                    <select id="language-level">
+                        <option value="beginner">Начинающий (A1-A2)</option>
+                        <option value="intermediate">Средний (B1-B2)</option>
+                        <option value="advanced">Продвинутый (C1-C2)</option>
+                    </select>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="language-chat">
+                        <div class="message assistant">
+                            <p>Привет! Я ваш учитель словацкого языка. Давайте начнём с микро-уроков. Что бы вы хотели изучить?</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="language-input" class="chat-input" placeholder="Введите сообщение или тему урока..." />
+                            <button class="send-btn" onclick="sendLanguageMessage()">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Создание резюме -->
+            <div class="tab-content" id="resume">
+                <div class="tab-header">
+                    <h2>Создание резюме</h2>
+                    <p>Помощь в подготовке вашего резюме на словацком рынке</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="resume-chat">
+                        <div class="message assistant">
+                            <p>Здравствуйте! Я помогу вам создать профессиональное резюме. Давайте начнём с основной информации. Как вас зовут?</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="resume-input" class="chat-input" placeholder="Введите информацию..." />
+                            <button class="send-btn" onclick="sendResumeMessage()">Отправить</button>
+                        </div>
+                        <button class="action-btn" onclick="generatePDF()" id="pdf-btn" style="display:none;">📥 Скачать резюме (PDF)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Поиск работы -->
+            <div class="tab-content" id="jobs">
+                <div class="tab-header">
+                    <h2>Поиск работы</h2>
+                    <p>Рекомендации доступных вакансий в Словакии</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="jobs-chat">
+                        <div class="message assistant">
+                            <p>Привет! Я помогу вам найти подходящую работу в Словакии. На основе вашего резюме я предложу вакансии. Что вас интересует?</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="jobs-input" class="chat-input" placeholder="Спросите о работе..." />
+                            <button class="send-btn" onclick="sendJobsMessage()">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jobs-list" id="jobs-list" style="display:none;">
+                    <h3>Доступные вакансии</h3>
+                    <div id="jobs-results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
