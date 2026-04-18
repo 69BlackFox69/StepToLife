@@ -6,6 +6,10 @@ from agents.initial_agent import InitialAgent
 from agents.language_agent import LanguageAgent
 from agents.resume_agent import ResumeAgent
 from agents.job_agent import JobAgent
+from agents.housing_agent import HousingAgent
+from agents.documents_agent import DocumentsAgent
+from agents.benefits_agent import BenefitsAgent
+from agents.emergency_agent import EmergencyAgent
 from config import config
 import json
 from datetime import datetime
@@ -42,6 +46,10 @@ try:
     language_agent = LanguageAgent()
     resume_agent = ResumeAgent()
     job_agent = JobAgent()
+    housing_agent = HousingAgent()
+    documents_agent = DocumentsAgent()
+    benefits_agent = BenefitsAgent()
+    emergency_agent = EmergencyAgent()
     print("[INFO] Все агенты успешно инициализированы")
 except Exception as e:
     print(f"[ERROR] Ошибка при инициализации агентов: {e}")
@@ -72,7 +80,8 @@ def chat_initial():
             user_sessions[user_id] = {
                 'history': [],
                 'user_info': {},
-                'knows_slovak': None
+                'knows_slovak': None,
+                'intake': {}
             }
         
         # Добавляем сообщение пользователя в историю
@@ -93,6 +102,7 @@ def chat_initial():
         # Обновляем информацию о пользователе
         if 'user_info' in response:
             user_sessions[user_id]['user_info'].update(response['user_info'])
+            user_sessions[user_id]['intake'].update(response['user_info'])
         
         # Проверяем, знает ли пользователь словацкий
         if 'knows_slovak' in response:
@@ -246,6 +256,130 @@ def chat_jobs():
     
     except Exception as e:
         print(f"[ERROR] Ошибка в chat_jobs: {e}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/chat/housing', methods=['POST'])
+def chat_housing():
+    """Специализированный агент - жилье"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'success': False, 'message': 'Пустой запрос'}), 400
+
+        user_id = data.get('user_id', 'default')
+        message = data.get('message', '')
+
+        if not message:
+            return jsonify({'success': False, 'message': 'Сообщение не может быть пустым'}), 400
+
+        if user_id not in user_sessions:
+            user_sessions[user_id] = {}
+
+        if 'housing_history' not in user_sessions[user_id]:
+            user_sessions[user_id]['housing_history'] = []
+
+        user_sessions[user_id]['housing_history'].append({'role': 'user', 'content': message})
+        response = housing_agent.process(message, user_sessions[user_id]['housing_history'])
+        user_sessions[user_id]['housing_history'].append({'role': 'assistant', 'content': response['message']})
+
+        return jsonify(response)
+    except Exception as e:
+        print(f"[ERROR] Ошибка в chat_housing: {e}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/chat/documents', methods=['POST'])
+def chat_documents():
+    """Специализированный агент - документы и легализация"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'success': False, 'message': 'Пустой запрос'}), 400
+
+        user_id = data.get('user_id', 'default')
+        message = data.get('message', '')
+
+        if not message:
+            return jsonify({'success': False, 'message': 'Сообщение не может быть пустым'}), 400
+
+        if user_id not in user_sessions:
+            user_sessions[user_id] = {}
+
+        if 'documents_history' not in user_sessions[user_id]:
+            user_sessions[user_id]['documents_history'] = []
+
+        user_sessions[user_id]['documents_history'].append({'role': 'user', 'content': message})
+        response = documents_agent.process(message, user_sessions[user_id]['documents_history'])
+        user_sessions[user_id]['documents_history'].append({'role': 'assistant', 'content': response['message']})
+
+        return jsonify(response)
+    except Exception as e:
+        print(f"[ERROR] Ошибка в chat_documents: {e}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/chat/benefits', methods=['POST'])
+def chat_benefits():
+    """Специализированный агент - соцподдержка и выплаты"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'success': False, 'message': 'Пустой запрос'}), 400
+
+        user_id = data.get('user_id', 'default')
+        message = data.get('message', '')
+
+        if not message:
+            return jsonify({'success': False, 'message': 'Сообщение не может быть пустым'}), 400
+
+        if user_id not in user_sessions:
+            user_sessions[user_id] = {}
+
+        if 'benefits_history' not in user_sessions[user_id]:
+            user_sessions[user_id]['benefits_history'] = []
+
+        user_sessions[user_id]['benefits_history'].append({'role': 'user', 'content': message})
+        response = benefits_agent.process(message, user_sessions[user_id]['benefits_history'])
+        user_sessions[user_id]['benefits_history'].append({'role': 'assistant', 'content': response['message']})
+
+        return jsonify(response)
+    except Exception as e:
+        print(f"[ERROR] Ошибка в chat_benefits: {e}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/chat/emergency', methods=['POST'])
+def chat_emergency():
+    """Специализированный агент - экстренная поддержка"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'success': False, 'message': 'Пустой запрос'}), 400
+
+        user_id = data.get('user_id', 'default')
+        message = data.get('message', '')
+
+        if not message:
+            return jsonify({'success': False, 'message': 'Сообщение не может быть пустым'}), 400
+
+        if user_id not in user_sessions:
+            user_sessions[user_id] = {}
+
+        if 'emergency_history' not in user_sessions[user_id]:
+            user_sessions[user_id]['emergency_history'] = []
+
+        user_sessions[user_id]['emergency_history'].append({'role': 'user', 'content': message})
+        response = emergency_agent.process(message, user_sessions[user_id]['emergency_history'])
+        user_sessions[user_id]['emergency_history'].append({'role': 'assistant', 'content': response['message']})
+
+        return jsonify(response)
+    except Exception as e:
+        print(f"[ERROR] Ошибка в chat_emergency: {e}")
         print(traceback.format_exc())
         return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
 
