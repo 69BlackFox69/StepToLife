@@ -530,6 +530,28 @@ body {
     font-weight: 600;
 }
 
+.plan-chat-wrap {
+    margin-bottom: 24px;
+}
+
+.plan-chat-container {
+    height: 360px;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-btn.secondary {
+    background: #6c757d;
+}
+
+.action-btn.secondary:hover {
+    background: #5a6268;
+}
+
 /* ===== ВКЛАДКИ ===== */
 
 .tabs-container {

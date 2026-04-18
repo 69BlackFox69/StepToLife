@@ -64,181 +64,24 @@
                         <span class="problem-desc">Скоро будет доступно</span>
                     </button>
                 </div>
-
-                <button class="action-btn" onclick="goToCharacteristics()">Далее</button>
             </div>
         </div>
 
-        <!-- ЭКРАН 3: Особенности пользователя -->
-        <div class="screen" id="screen-characteristics" style="display:none;">
+        <!-- ЭКРАН 3: Интервью и план -->
+        <div class="screen" id="screen-career-chat" style="display:none;">
             <div class="screen-content">
-                <h2>Ваши особенности</h2>
-                <p class="screen-subtitle">Это поможет мне подготовить лучший план</p>
-                
-                <div class="characteristics-section">
-                    <h3>📚 Ваши возможности</h3>
-                    
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="language" value="yes"> 
-                        <span>Я знаю словацкий язык</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="documents" value="yes"> 
-                        <span>У меня есть документы</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="residence" value="yes"> 
-                        <span>У меня есть место проживания</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="work_permit" value="yes"> 
-                        <span>У меня есть разрешение на работу</span>
-                    </label>
-                </div>
+                <h2>Короткое интервью</h2>
+                <p class="screen-subtitle">Я задам несколько коротких вопросов и потом соберу персональный план</p>
 
-                <div class="divider"></div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="career-chat"></div>
 
-                <div class="characteristics-section">
-                    <h3>⚡ Что может доставлять дискомфорт?</h3>
-                    
-                    <div class="discomfort-group">
-                        <h4>🧠 Концентрация</h4>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="concentration-long"> 
-                            <span>Мне сложно долго концентрироваться</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="concentration-short"> 
-                            <span>Мне удобнее, когда информация короткая</span>
-                        </label>
-                    </div>
-
-                    <div class="discomfort-group">
-                        <h4>🌍 Окружающая среда</h4>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="environment-new-places"> 
-                            <span>Мне сложно в новых местах</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="environment-predictability"> 
-                            <span>Мне важно понимать, что будет дальше</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="environment-crowds"> 
-                            <span>Мне некомфортно в людных местах</span>
-                        </label>
-                    </div>
-
-                    <div class="discomfort-group">
-                        <h4>💬 Общение</h4>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="communication-start"> 
-                            <span>Мне сложно начать разговор</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="communication-fear"> 
-                            <span>Я боюсь сказать что-то неправильно</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="communication-phrases"> 
-                            <span>Мне помогают готовые фразы</span>
-                        </label>
-                    </div>
-
-                    <div class="discomfort-group">
-                        <h4>⚡️ Стресс</h4>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="stress-lose"> 
-                            <span>В стрессовой ситуации я теряюсь</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="stress-time"> 
-                            <span>Мне нужно больше времени на решения</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="stress-stop"> 
-                            <span>Я могу остановиться и не продолжить</span>
-                        </label>
-                    </div>
-
-                    <div class="discomfort-group">
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="discomfort" value="no-problems"> 
-                            <span>✅ У меня нет таких проблем</span>
-                        </label>
-                    </div>
-                </div>
-
-                <button class="action-btn" onclick="goToJobsRoute()">Начать путь к работе</button>
-            </div>
-        </div>
-
-        <!-- ЭКРАН 4: Пошаговый маршрут -->
-        <div class="screen" id="screen-jobs-route" style="display:none;">
-            <div class="screen-content">
-                <h2>Ваш план поиска работы</h2>
-                <p class="screen-subtitle">Мы сделаем это шаг за шагом</p>
-
-                <div class="route-container">
-                    <div class="route-step" id="step-1">
-                        <div class="step-header">
-                            <div class="step-number">1</div>
-                            <div class="step-info">
-                                <h3>Подготовить резюме</h3>
-                                <p>Основная информация о вас</p>
-                            </div>
-                        </div>
-                        <div class="step-action">
-                            <button class="step-btn" onclick="openTab('resume-step')">Начать</button>
-                            <span class="step-status" id="status-1"></span>
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="career-input" class="chat-input" placeholder="Введите ответ..." />
+                            <button class="send-btn" onclick="sendCareerMessage()">Отправить</button>
                         </div>
                     </div>
-
-                    <div class="route-step" id="step-2">
-                        <div class="step-header">
-                            <div class="step-number">2</div>
-                            <div class="step-info">
-                                <h3>Подготовить фразы</h3>
-                                <p>Что сказать при встрече</p>
-                            </div>
-                        </div>
-                        <div class="step-action">
-                            <button class="step-btn" onclick="openTab('language-step')">Начать</button>
-                            <span class="step-status" id="status-2"></span>
-                        </div>
-                    </div>
-
-                    <div class="route-step" id="step-3">
-                        <div class="step-header">
-                            <div class="step-number">3</div>
-                            <div class="step-info">
-                                <h3>Найти вакансии</h3>
-                                <p>Где искать работу</p>
-                            </div>
-                        </div>
-                        <div class="step-action">
-                            <button class="step-btn" onclick="openTab('jobs-step')">Начать</button>
-                            <span class="step-status" id="status-3"></span>
-                        </div>
-                    </div>
-
-                    <div class="route-step" id="step-4">
-                        <div class="step-header">
-                            <div class="step-number">4</div>
-                            <div class="step-info">
-                                <h3>Подготовиться к встрече</h3>
-                                <p>Как себя вести</p>
-                            </div>
-                        </div>
-                        <div class="step-action">
-                            <button class="step-btn" onclick="openTab('interview-step')">Начать</button>
-                            <span class="step-status" id="status-4"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="current-step-info" id="current-step-info">
-                    <p>⏭️ Начните с первого шага</p>
                 </div>
             </div>
         </div>

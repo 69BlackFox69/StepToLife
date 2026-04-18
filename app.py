@@ -10,6 +10,7 @@ from agents.housing_agent import HousingAgent
 from agents.documents_agent import DocumentsAgent
 from agents.benefits_agent import BenefitsAgent
 from agents.emergency_agent import EmergencyAgent
+from agents.career_agent import CareerAgent
 from services import ResourceResolver, infer_city_from_message
 from config import config
 import json
@@ -51,6 +52,7 @@ try:
     documents_agent = DocumentsAgent()
     benefits_agent = BenefitsAgent()
     emergency_agent = EmergencyAgent()
+    career_agent = CareerAgent()
     print("[INFO] Все агенты успешно инициализированы")
 except Exception as e:
     print(f"[ERROR] Ошибка при инициализации агентов: {e}")
@@ -70,9 +72,7 @@ def get_or_create_user_state(user_id):
             'knows_slovak': None,
             'intake': {},
             'onboarding': {
-                'state_check': {},
-                'characteristics': {},
-                'completed': False
+                'state_check': {}
             }
         }
     return user_sessions[user_id]
@@ -275,6 +275,79 @@ def chat_jobs():
     
     except Exception as e:
         print(f"[ERROR] Ошибка в chat_jobs: {e}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/chat/career', methods=['POST'])
+def chat_career():
+    """Интервью по работе -> персональный план -> подтверждение -> резюме"""
+    try:
+        data = request.json or {}
+        user_id = data.get('user_id', 'default')
+        user_message = data.get('message', '')
+        is_init = bool(data.get('is_init', False))
+
+        user = get_or_create_user_state(user_id)
+        if 'career_session' not in user:
+            user['career_session'] = {
+                'phase': 'interview',
+                'question_index': 0,
+                'answers': [],
+                'characteristics': {
+                    'language': 'unknown',
+                    'documents': 'unknown',
+                    'residence': 'unknown',
+                    'work_permit': 'unknown',
+                    'discomforts': [],
+                },
+                'history': []
+            }
+
+        session = user['career_session']
+
+        if is_init:
+            session['phase'] = 'interview'
+            session['question_index'] = 0
+            session['answers'] = []
+            session['characteristics'] = {
+                'language': 'unknown',
+                'documents': 'unknown',
+                'residence': 'unknown',
+                'work_permit': 'unknown',
+                'discomforts': [],
+            }
+            session['history'] = []
+        elif not user_message:
+            return jsonify({'success': False, 'message': 'Сообщение не может быть пустым'}), 400
+
+        if is_init:
+            session['history'].append({'role': 'assistant', 'content': '[START_CAREER_CHAT]'})
+            response = career_agent.process(
+                user_message='',
+                conversation_history=session['history'],
+                session_state=session,
+                is_init=True,
+            )
+        else:
+            session['history'].append({'role': 'user', 'content': user_message})
+            response = career_agent.process(
+                user_message=user_message,
+                conversation_history=session['history'],
+                session_state=session,
+                is_init=False,
+            )
+
+        if response.get('success'):
+            session['phase'] = response.get('phase', session['phase'])
+            session['question_index'] = response.get('question_index', session['question_index'])
+            session['answers'] = response.get('answers', session['answers'])
+            session['characteristics'] = response.get('characteristics', session['characteristics'])
+            session['history'].append({'role': 'assistant', 'content': response.get('message', '')})
+
+        return jsonify(response)
+    except Exception as e:
+        print(f"[ERROR] Ошибка в chat_career: {e}")
         print(traceback.format_exc())
         return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
 
@@ -484,34 +557,6 @@ def onboarding_state_check():
         })
     except Exception as e:
         print(f"[ERROR] Ошибка в onboarding_state_check: {e}")
-        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
-
-
-@app.route('/api/onboarding/characteristics', methods=['POST'])
-def onboarding_characteristics():
-    """Сохранить особенности пользователя"""
-    try:
-        data = request.json or {}
-        user_id = data.get('user_id', 'default')
-        
-        characteristics = {
-            'language': data.get('language', 'no'),
-            'documents': data.get('documents', 'no'),
-            'residence': data.get('residence', 'no'),
-            'work_permit': data.get('work_permit', 'no'),
-            'discomforts': data.get('discomforts', [])
-        }
-        
-        user = get_or_create_user_state(user_id)
-        user['onboarding']['characteristics'] = characteristics
-        user['onboarding']['completed'] = True
-        
-        return jsonify({
-            'success': True,
-            'characteristics': characteristics
-        })
-    except Exception as e:
-        print(f"[ERROR] Ошибка в onboarding_characteristics: {e}")
         return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
 
 
