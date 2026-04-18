@@ -13,71 +13,248 @@
             <p class="subtitle">Ваш путь к успешной карьере в Словакии</p>
         </header>
 
-        <div class="tabs-container">
+        <!-- ЭКРАН 1: Чек-ин состояния -->
+        <div class="screen" id="screen-state-check">
+            <div class="screen-content chat-onboarding">
+                <h2>Первый разговор с помощником</h2>
+                <p class="screen-subtitle">Я задам короткие вопросы и подстроюсь под вас</p>
+
+                <div class="onboarding-chat" id="onboarding-chat">
+                    <div class="message assistant">
+                        <p>Здравствуйте. Я рядом и помогу шаг за шагом.</p>
+                    </div>
+                </div>
+
+                <div class="onboarding-controls" id="onboarding-controls">
+                    <button class="reply-btn" data-step="mood" data-value="calm" onclick="answerOnboarding('mood', 'calm')">😌 Спокойно, готов к действиям</button>
+                    <button class="reply-btn" data-step="mood" data-value="anxious" onclick="answerOnboarding('mood', 'anxious')">😟 Беспокойно, волнуюсь</button>
+                    <button class="reply-btn" data-step="mood" data-value="overwhelmed" onclick="answerOnboarding('mood', 'overwhelmed')">😫 Перегруженный, тяжело</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 2: Выбор проблемы -->
+        <div class="screen" id="screen-problem-choice" style="display:none;">
+            <div class="screen-content">
+                <h2>Что вам нужно?</h2>
+                <p class="screen-subtitle">Выберите, чем я могу вам помочь</p>
+                
+                <div class="problem-buttons">
+                    <button class="problem-btn active" onclick="selectProblem('jobs')">
+                        <span class="problem-icon">💼</span>
+                        <span class="problem-title">Найти работу</span>
+                        <span class="problem-desc">Резюме, поиск, собеседование</span>
+                    </button>
+
+                    <button class="problem-btn disabled" onclick="showDemoMessage('documents')">
+                        <span class="problem-icon">🪪</span>
+                        <span class="problem-title">Документы</span>
+                        <span class="problem-desc">Скоро будет доступно</span>
+                    </button>
+
+                    <button class="problem-btn disabled" onclick="showDemoMessage('language')">
+                        <span class="problem-icon">🌍</span>
+                        <span class="problem-title">Словацкий язык</span>
+                        <span class="problem-desc">Скоро будет доступно</span>
+                    </button>
+
+                    <button class="problem-btn disabled" onclick="showDemoMessage('housing')">
+                        <span class="problem-icon">🏠</span>
+                        <span class="problem-title">Жилье</span>
+                        <span class="problem-desc">Скоро будет доступно</span>
+                    </button>
+                </div>
+
+                <button class="action-btn" onclick="goToCharacteristics()">Далее</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 3: Особенности пользователя -->
+        <div class="screen" id="screen-characteristics" style="display:none;">
+            <div class="screen-content">
+                <h2>Ваши особенности</h2>
+                <p class="screen-subtitle">Это поможет мне подготовить лучший план</p>
+                
+                <div class="characteristics-section">
+                    <h3>📚 Ваши возможности</h3>
+                    
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="language" value="yes"> 
+                        <span>Я знаю словацкий язык</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="documents" value="yes"> 
+                        <span>У меня есть документы</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="residence" value="yes"> 
+                        <span>У меня есть место проживания</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="work_permit" value="yes"> 
+                        <span>У меня есть разрешение на работу</span>
+                    </label>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="characteristics-section">
+                    <h3>⚡ Что может доставлять дискомфорт?</h3>
+                    
+                    <div class="discomfort-group">
+                        <h4>🧠 Концентрация</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="concentration-long"> 
+                            <span>Мне сложно долго концентрироваться</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="concentration-short"> 
+                            <span>Мне удобнее, когда информация короткая</span>
+                        </label>
+                    </div>
+
+                    <div class="discomfort-group">
+                        <h4>🌍 Окружающая среда</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="environment-new-places"> 
+                            <span>Мне сложно в новых местах</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="environment-predictability"> 
+                            <span>Мне важно понимать, что будет дальше</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="environment-crowds"> 
+                            <span>Мне некомфортно в людных местах</span>
+                        </label>
+                    </div>
+
+                    <div class="discomfort-group">
+                        <h4>💬 Общение</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="communication-start"> 
+                            <span>Мне сложно начать разговор</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="communication-fear"> 
+                            <span>Я боюсь сказать что-то неправильно</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="communication-phrases"> 
+                            <span>Мне помогают готовые фразы</span>
+                        </label>
+                    </div>
+
+                    <div class="discomfort-group">
+                        <h4>⚡️ Стресс</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="stress-lose"> 
+                            <span>В стрессовой ситуации я теряюсь</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="stress-time"> 
+                            <span>Мне нужно больше времени на решения</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="stress-stop"> 
+                            <span>Я могу остановиться и не продолжить</span>
+                        </label>
+                    </div>
+
+                    <div class="discomfort-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="discomfort" value="no-problems"> 
+                            <span>✅ У меня нет таких проблем</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="action-btn" onclick="goToJobsRoute()">Начать путь к работе</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 4: Пошаговый маршрут -->
+        <div class="screen" id="screen-jobs-route" style="display:none;">
+            <div class="screen-content">
+                <h2>Ваш план поиска работы</h2>
+                <p class="screen-subtitle">Мы сделаем это шаг за шагом</p>
+
+                <div class="route-container">
+                    <div class="route-step" id="step-1">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div class="step-info">
+                                <h3>Подготовить резюме</h3>
+                                <p>Основная информация о вас</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <button class="step-btn" onclick="openTab('resume-step')">Начать</button>
+                            <span class="step-status" id="status-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="route-step" id="step-2">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div class="step-info">
+                                <h3>Подготовить фразы</h3>
+                                <p>Что сказать при встрече</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <button class="step-btn" onclick="openTab('language-step')">Начать</button>
+                            <span class="step-status" id="status-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="route-step" id="step-3">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div class="step-info">
+                                <h3>Найти вакансии</h3>
+                                <p>Где искать работу</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <button class="step-btn" onclick="openTab('jobs-step')">Начать</button>
+                            <span class="step-status" id="status-3"></span>
+                        </div>
+                    </div>
+
+                    <div class="route-step" id="step-4">
+                        <div class="step-header">
+                            <div class="step-number">4</div>
+                            <div class="step-info">
+                                <h3>Подготовиться к встрече</h3>
+                                <p>Как себя вести</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <button class="step-btn" onclick="openTab('interview-step')">Начать</button>
+                            <span class="step-status" id="status-4"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="current-step-info" id="current-step-info">
+                    <p>⏭️ Начните с первого шага</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКИ ДЛЯ ШАГОВ МАРШРУТА -->
+        <div class="tabs-container" id="tabs-container" style="display:none;">
             <div class="tabs">
-                <button class="tab-btn active" data-tab="initial">Начало</button>
-                <button class="tab-btn" data-tab="language">Словацкий язык</button>
-                <button class="tab-btn" data-tab="resume">Резюме</button>
-                <button class="tab-btn" data-tab="jobs">Работа</button>
+                <button class="tab-btn active" data-tab="resume-step">1. Резюме</button>
+                <button class="tab-btn" data-tab="language-step">2. Фразы</button>
+                <button class="tab-btn" data-tab="jobs-step">3. Поиск</button>
+                <button class="tab-btn" data-tab="interview-step">4. Встреча</button>
+                <button class="tab-btn" data-tab="initial">Основное</button>
             </div>
 
-            <!-- TAB 1: Начальная консультация -->
-            <div class="tab-content active" id="initial">
-                <div class="tab-header">
-                    <h2>Планирование вашего пути</h2>
-                    <p>Расскажите нам о ваших целях и текущей ситуации</p>
-                </div>
-
-                <div class="chat-container">
-                    <div class="chat-messages" id="initial-chat">
-                        <div class="message assistant">
-                            <p>Здравствуйте! Я помощник StepToLife. Помогу вам найти работу в Словакии. С чего вы хотите начать? Расскажите о ваших целях и текущей ситуации.</p>
-                        </div>
-                    </div>
-
-                    <div class="chat-input-area">
-                        <div class="input-group">
-                            <input type="text" id="initial-input" class="chat-input" placeholder="Введите сообщение..." />
-                            <button class="send-btn" onclick="sendInitialMessage()">Отправить</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: Обучение словацкому -->
-            <div class="tab-content" id="language">
-                <div class="tab-header">
-                    <h2>Изучение словацкого языка</h2>
-                    <p>Микро-уроки для трудоустройства</p>
-                </div>
-
-                <div class="language-settings">
-                    <label>Уровень обучения:</label>
-                    <select id="language-level">
-                        <option value="beginner">Начинающий (A1-A2)</option>
-                        <option value="intermediate">Средний (B1-B2)</option>
-                        <option value="advanced">Продвинутый (C1-C2)</option>
-                    </select>
-                </div>
-
-                <div class="chat-container">
-                    <div class="chat-messages" id="language-chat">
-                        <div class="message assistant">
-                            <p>Привет! Я ваш учитель словацкого языка. Давайте начнём с микро-уроков. Что бы вы хотели изучить?</p>
-                        </div>
-                    </div>
-
-                    <div class="chat-input-area">
-                        <div class="input-group">
-                            <input type="text" id="language-input" class="chat-input" placeholder="Введите сообщение или тему урока..." />
-                            <button class="send-btn" onclick="sendLanguageMessage()">Отправить</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3: Создание резюме -->
-            <div class="tab-content" id="resume">
+            <!-- Шаг 1: Резюме -->
+            <div class="tab-content active" id="resume-step">
                 <div class="tab-header">
                     <h2>Создание резюме</h2>
                     <p>Помощь в подготовке вашего резюме на словацком рынке</p>
@@ -86,7 +263,7 @@
                 <div class="chat-container">
                     <div class="chat-messages" id="resume-chat">
                         <div class="message assistant">
-                            <p>Здравствуйте! Я помогу вам создать профессиональное резюме. Давайте начнём с основной информации. Как вас зовут?</p>
+                            <p>Здравствуйте! Я помогу вам создать простое резюме. Давайте начнём с основной информации. Как вас зовут?</p>
                         </div>
                     </div>
 
@@ -96,35 +273,140 @@
                             <button class="send-btn" onclick="sendResumeMessage()">Отправить</button>
                         </div>
                         <button class="action-btn" onclick="generatePDF()" id="pdf-btn" style="display:none;">📥 Скачать резюме (PDF)</button>
+                        <button class="action-btn" onclick="stepComplete(1)">✅ Резюме готово</button>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: Поиск работы -->
-            <div class="tab-content" id="jobs">
+            <!-- Шаг 2: Фразы -->
+            <div class="tab-content" id="language-step">
+                <div class="tab-header">
+                    <h2>Готовые фразы</h2>
+                    <p>Что говорить при встрече с работодателем</p>
+                </div>
+
+                <div class="phrases-container">
+                    <div class="phrase-card">
+                        <h3>Приветствие</h3>
+                        <p class="phrase-text">Dobrý deň, som rád/rada, že som tu.</p>
+                        <button class="phrase-btn" onclick="speakPhrase('Dobrý deň, som rád/rada, že som tu.')">🔊 Озвучить</button>
+                    </div>
+
+                    <div class="phrase-card">
+                        <h3>О себе</h3>
+                        <p class="phrase-text">Som motivovaný/motivovaná a rád/rada sa učím.</p>
+                        <button class="phrase-btn" onclick="speakPhrase('Som motivovaný/motivovaná a rád/rada sa učím.')">🔊 Озвучить</button>
+                    </div>
+
+                    <div class="phrase-card">
+                        <h3>Вопрос</h3>
+                        <p class="phrase-text">Môžete mi prosím povedať viac o tejto pozícii?</p>
+                        <button class="phrase-btn" onclick="speakPhrase('Môžete mi prosím povedať viac o tejto pozícii?')">🔊 Озвучить</button>
+                    </div>
+
+                    <div class="phrase-card">
+                        <h3>Спасибо</h3>
+                        <p class="phrase-text">Ďakujem za čas. Som vďačný/vďačná za príležitosť.</p>
+                        <button class="phrase-btn" onclick="speakPhrase('Ďakujem za čas. Som vďačný/vďačná za príležitosť.')">🔊 Озвучить</button>
+                    </div>
+                </div>
+
+                <button class="action-btn" onclick="stepComplete(2)">✅ Фразы запомнены</button>
+            </div>
+
+            <!-- Шаг 3: Поиск работы -->
+            <div class="tab-content" id="jobs-step">
                 <div class="tab-header">
                     <h2>Поиск работы</h2>
-                    <p>Рекомендации доступных вакансий в Словакии</p>
+                    <p>Где искать вакансии в Словакии</p>
+                </div>
+
+                <div class="jobs-info">
+                    <div class="info-card">
+                        <h3>🌐 Основные сайты</h3>
+                        <ul>
+                            <li><strong>profesia.sk</strong> — крупный портал вакансий</li>
+                            <li><strong>jobs.sk</strong> — поиск по категориям</li>
+                            <li><strong>linkedin.com</strong> — профессиональная сеть</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>📝 Советы при поиске</h3>
+                        <ul>
+                            <li>Ищите вакансии, соответствующие вашему опыту</li>
+                            <li>Сохраняйте интересующие вас объявления</li>
+                            <li>Откликайтесь на несколько позиций одновременно</li>
+                            <li>Используйте готовые фразы из предыдущего шага</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="action-btn" onclick="stepComplete(3)">✅ Я понял(а) где искать</button>
+            </div>
+
+            <!-- Шаг 4: Подготовка к собеседованию -->
+            <div class="tab-content" id="interview-step">
+                <div class="tab-header">
+                    <h2>Подготовка к встрече</h2>
+                    <p>Как вести себя при собеседовании</p>
+                </div>
+
+                <div class="interview-checklist">
+                    <div class="checklist-card">
+                        <h3>✅ Перед встречей</h3>
+                        <ul>
+                            <li>☐ Напечатайте копии своего резюме</li>
+                            <li>☐ Проверьте адрес и время встречи</li>
+                            <li>☐ Прийдите на 10 минут раньше</li>
+                            <li>☐ Зарядите телефон</li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-card">
+                        <h3>😊 Во время встречи</h3>
+                        <ul>
+                            <li>☐ Смотрите в глаза собеседнику</li>
+                            <li>☐ Давайте крепкое, но не сильное рукопожатие</li>
+                            <li>☐ Слушайте внимательно</li>
+                            <li>☐ Отвечайте честно и кратко</li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-card">
+                        <h3>💬 Если вам сложно</h3>
+                        <ul>
+                            <li>☐ Говорите медленнее, если нужно</li>
+                            <li>☐ Спросите перед тем, как ответить</li>
+                            <li>☐ Говорите правду о своих возможностях</li>
+                            <li>☐ Используйте готовые фразы</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="action-btn" onclick="stepComplete(4)">✅ Я готов(а)</button>
+            </div>
+
+            <!-- Исходная вкладка "Начало" -->
+            <div class="tab-content" id="initial">
+                <div class="tab-header">
+                    <h2>Планирование вашего пути</h2>
+                    <p>Расскажите нам о ваших целях и текущей ситуации</p>
                 </div>
 
                 <div class="chat-container">
-                    <div class="chat-messages" id="jobs-chat">
+                    <div class="chat-messages" id="initial-chat">
                         <div class="message assistant">
-                            <p>Привет! Я помогу вам найти подходящую работу в Словакии. На основе вашего резюме я предложу вакансии. Что вас интересует?</p>
+                            <p>Здравствуйте! Я помощник StepToLife. Помогу вам найти работу в Словакии. Как дела?</p>
                         </div>
                     </div>
 
                     <div class="chat-input-area">
                         <div class="input-group">
-                            <input type="text" id="jobs-input" class="chat-input" placeholder="Спросите о работе..." />
-                            <button class="send-btn" onclick="sendJobsMessage()">Отправить</button>
+                            <input type="text" id="initial-input" class="chat-input" placeholder="Введите сообщение..." />
+                            <button class="send-btn" onclick="sendInitialMessage()">Отправить</button>
                         </div>
                     </div>
-                </div>
-
-                <div class="jobs-list" id="jobs-list" style="display:none;">
-                    <h3>Доступные вакансии</h3>
-                    <div id="jobs-results"></div>
                 </div>
             </div>
         </div>

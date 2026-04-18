@@ -60,6 +60,23 @@ except Exception as e:
 user_sessions = {}
 resource_resolver = ResourceResolver()
 
+
+def get_or_create_user_state(user_id):
+    """Инициализировать состояние пользователя"""
+    if user_id not in user_sessions:
+        user_sessions[user_id] = {
+            'history': [],
+            'user_info': {},
+            'knows_slovak': None,
+            'intake': {},
+            'onboarding': {
+                'state_check': {},
+                'characteristics': {},
+                'completed': False
+            }
+        }
+    return user_sessions[user_id]
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -442,6 +459,76 @@ def search_resources():
         print(f"[ERROR] Ошибка в search_resources: {e}")
         print(traceback.format_exc())
         return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+@app.route('/api/onboarding/state-check', methods=['POST'])
+def onboarding_state_check():
+    """Сохранить состояние пользователя"""
+    try:
+        data = request.json or {}
+        user_id = data.get('user_id', 'default')
+        
+        state_check = {
+            'mood': data.get('mood', ''),
+            'communication_difficulty': data.get('communication_difficulty', ''),
+            'simple_mode': data.get('simple_mode', False),
+            'theme_choice': data.get('theme_choice', 'light'),
+            'font_size': data.get('font_size', 'medium')
+        }
+        
+        user = get_or_create_user_state(user_id)
+        user['onboarding']['state_check'] = state_check
+        
+        return jsonify({
+            'success': True,
+            'state_check': state_check
+        })
+    except Exception as e:
+        print(f"[ERROR] Ошибка в onboarding_state_check: {e}")
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/onboarding/characteristics', methods=['POST'])
+def onboarding_characteristics():
+    """Сохранить особенности пользователя"""
+    try:
+        data = request.json or {}
+        user_id = data.get('user_id', 'default')
+        
+        characteristics = {
+            'language': data.get('language', 'no'),
+            'documents': data.get('documents', 'no'),
+            'residence': data.get('residence', 'no'),
+            'work_permit': data.get('work_permit', 'no'),
+            'discomforts': data.get('discomforts', [])
+        }
+        
+        user = get_or_create_user_state(user_id)
+        user['onboarding']['characteristics'] = characteristics
+        user['onboarding']['completed'] = True
+        
+        return jsonify({
+            'success': True,
+            'characteristics': characteristics
+        })
+    except Exception as e:
+        print(f"[ERROR] Ошибка в onboarding_characteristics: {e}")
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
+
+@app.route('/api/onboarding/status/<user_id>', methods=['GET'])
+def onboarding_status(user_id):
+    """Получить статус онбординга"""
+    try:
+        user = get_or_create_user_state(user_id)
+        return jsonify({
+            'success': True,
+            'onboarding': user['onboarding'],
+            'completed': user['onboarding'].get('completed', False)
+        })
+    except Exception as e:
+        print(f"[ERROR] Ошибка в onboarding_status: {e}")
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'}), 500
+
 
 if __name__ == '__main__':
     print("[INFO] Запуск Flask приложения StepToLife")
