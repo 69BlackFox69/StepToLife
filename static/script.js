@@ -118,9 +118,9 @@ function startOnboardingChat() {
     if (!controls) return;
 
     controls.innerHTML = `
-        <button class="reply-btn" onclick="answerOnboarding('mood', 'calm')">😌 Спокойно</button>
-        <button class="reply-btn" onclick="answerOnboarding('mood', 'anxious')">😟 Беспокойно</button>
-        <button class="reply-btn" onclick="answerOnboarding('mood', 'overwhelmed')">😫 Тяжело</button>
+        <button class="reply-btn" onclick="answerOnboarding('mood', 'calm')">😌 Calm</button>
+        <button class="reply-btn" onclick="answerOnboarding('mood', 'anxious')">😟 Anxious</button>
+        <button class="reply-btn" onclick="answerOnboarding('mood', 'overwhelmed')">😫 Overwhelmed</button>
     `;
 }
 
@@ -133,8 +133,8 @@ function renderOnboardingControls(step) {
 
     if (step === 'simple_mode') {
         controls.innerHTML = `
-            <button class="${label}" onclick="answerOnboarding('simpleMode', true)">Да, нужен</button>
-            <button class="${label}" onclick="answerOnboarding('simpleMode', false)">Нет, обычный</button>
+            <button class="${label}" onclick="answerOnboarding('simpleMode', true)">Yes, I need it</button>
+            <button class="${label}" onclick="answerOnboarding('simpleMode', false)">No, standard mode</button>
         `;
         return;
     }
@@ -169,11 +169,11 @@ async function answerOnboarding(step, value) {
     if (step === 'mood') {
         userState.mood = value;
         userState.themeChoice = getThemeForMood(value);
-        appendOnboardingMessage('user', value === 'calm' ? 'Спокойно' : value === 'anxious' ? 'Беспокойно' : 'Тяжело');
-        appendOnboardingMessage('assistant', value === 'overwhelmed' ? 'Понял. Буду отвечать коротко и просто.' : 'Понял. Подстрою стиль под вас.');
+        appendOnboardingMessage('user', value === 'calm' ? 'Calm' : value === 'anxious' ? 'Anxious' : 'Overwhelmed');
+        appendOnboardingMessage('assistant', value === 'overwhelmed' ? 'Understood. I will keep answers short and simple.' : 'Understood. I will adapt my style to you.');
         applyTheme(userState.mood, userState.communication, userState.simpleMode, userState.themeChoice, userState.fontSize);
         renderOnboardingControls('simple_mode');
-        appendOnboardingMessage('assistant', 'Нужен ли вам очень простой режим?');
+        appendOnboardingMessage('assistant', 'Do you need an extra simple mode?');
         await saveOnboardingState();
         return;
     }
@@ -181,10 +181,10 @@ async function answerOnboarding(step, value) {
     if (step === 'simpleMode') {
         userState.simpleMode = Boolean(value);
         userState.fontSize = userState.simpleMode ? 'large' : 'medium';
-        appendOnboardingMessage('user', value ? 'Да, нужен' : 'Нет, обычный');
+        appendOnboardingMessage('user', value ? 'Yes, I need it' : 'No, standard mode');
         applyTheme(userState.mood, userState.communication, userState.simpleMode, userState.themeChoice, userState.fontSize);
         renderOnboardingControls('done');
-        appendOnboardingMessage('assistant', 'Спасибо. Идем дальше к выбору задачи.');
+        appendOnboardingMessage('assistant', 'Thank you. Let’s move on to selecting your task.');
         await saveOnboardingState();
 
         setTimeout(() => {
@@ -215,12 +215,12 @@ function selectProblem(problem) {
 }
 
 function showDemoMessage() {
-    alert('Этот раздел скоро будет доступен. Сейчас работает путь поиска работы.');
+    alert('This section will be available soon. The job search path is currently active.');
 }
 
 async function goToCharacteristics() {
     if (!userState.selectedProblem) {
-        alert('Пожалуйста, выберите проблему');
+        alert('Please choose a problem first');
         return;
     }
 
@@ -268,7 +268,7 @@ async function goToJobsRoute() {
     userState.careerPhase = 'interview';
     userState.planApproved = false;
 
-    appendPlanChatMessage('assistant', 'Начинаю короткое интервью, чтобы составить персональный план.');
+    appendPlanChatMessage('assistant', 'Starting a short interview to build your personalized plan.');
 
     try {
         const data = await requestUnifiedCareer('', true);
@@ -276,10 +276,10 @@ async function goToJobsRoute() {
             userState.careerPhase = data.phase || 'interview';
             appendPlanChatMessage('assistant', data.message);
         } else {
-            appendPlanChatMessage('assistant', `Ошибка: ${data.message}`);
+            appendPlanChatMessage('assistant', `Error: ${data.message}`);
         }
     } catch (e) {
-        appendPlanChatMessage('assistant', 'Ошибка сервера. Попробуйте еще раз.');
+        appendPlanChatMessage('assistant', 'Server error. Please try again.');
     }
 }
 
@@ -298,7 +298,7 @@ async function goBackToCareerChat() {
     if (data && data.success) {
         appendPlanChatMessage('assistant', data.message);
     } else {
-        appendPlanChatMessage('assistant', 'Не удалось перезапустить вопросы. Попробуйте еще раз.');
+        appendPlanChatMessage('assistant', 'Could not restart the questions. Please try again.');
     }
 }
 
@@ -316,7 +316,7 @@ async function sendPlanMessage() {
         const data = await requestUnifiedCareer(message, false);
 
         if (!data.success) {
-            appendPlanChatMessage('assistant', `Ошибка: ${data.message}`);
+            appendPlanChatMessage('assistant', `Error: ${data.message}`);
             return;
         }
 
@@ -332,7 +332,7 @@ async function sendPlanMessage() {
             approvePlanAndStart(false);
         }
     } catch (e) {
-        appendPlanChatMessage('assistant', 'Ошибка сервера. Попробуйте еще раз.');
+        appendPlanChatMessage('assistant', 'Server error. Please try again.');
     }
 }
 
@@ -381,7 +381,7 @@ function openTab(tabName) {
 function stepComplete(stepNum) {
     const statusEl = document.getElementById(`status-${stepNum}`);
     if (statusEl) {
-        statusEl.innerHTML = '✅ Завершено';
+        statusEl.innerHTML = '✅ Completed';
         statusEl.style.color = '#28a745';
     }
 }
@@ -437,11 +437,11 @@ async function sendGenericChatMessage(inputId, chatId, endpoint) {
         if (data.success) {
             addMessageToChat(chatId, data.message, 'assistant');
         } else {
-            addMessageToChat(chatId, 'Ошибка: ' + data.message, 'assistant');
+            addMessageToChat(chatId, 'Error: ' + data.message, 'assistant');
         }
     } catch (e) {
         removeLastMessage(chatId);
-        addMessageToChat(chatId, 'Ошибка сервера', 'assistant');
+        addMessageToChat(chatId, 'Server error', 'assistant');
     }
 }
 
@@ -467,7 +467,7 @@ function showLoadingMessage(chatId) {
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message assistant loading';
     loadingDiv.id = 'loading-msg';
-    loadingDiv.innerHTML = '<p>⏳ Загрузка...</p>';
+    loadingDiv.innerHTML = '<p>⏳ Loading...</p>';
     chatEl.appendChild(loadingDiv);
     chatEl.scrollTop = chatEl.scrollHeight;
 }
