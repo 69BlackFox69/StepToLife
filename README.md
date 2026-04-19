@@ -1,88 +1,88 @@
-# StepToLife - Поддержка в трудоустройстве
+# StepToLife - Employment Support
 
-Платформа для помощи в трудоустройстве в Словакии с использованием AI агентов.
+A platform that helps users find employment in Slovakia using AI agents.
 
-## Функциональность
+## Features
 
-**4 интерактивные вкладки с различными AI агентами:**
+**4 interactive tabs powered by different AI agents:**
 
-1. **Начало** - Начальная консультация с определением целей и уровня знания словацкого языка
-2. **Словацкий язык** - Микро-уроки по словацкому языку для разных уровней (A1-C2)
-3. **Резюме** - Интерактивное создание профессионального резюме с сохранением в PDF
-4. **Работа** - Поиск и рекомендация вакансий в Словакии на основе резюме
+1. **Start** - Initial consultation to identify goals and Slovak language level
+2. **Slovak Language** - Micro-lessons in Slovak for different levels (A1-C2)
+3. **Resume** - Interactive professional resume creation with PDF export
+4. **Jobs** - Job search and vacancy recommendations in Slovakia based on the resume
 
-## Требования
+## Requirements
 
 - Python 3.8+
-- OpenAI API ключ
+- OpenAI API key
 
-## Установка
+## Installation
 
-### 1. Клонирование репозитория
+### 1. Open the repository folder
 ```bash
 cd "c:\New hakaton\StepToLife"
 ```
 
-### 2. Создание виртуального окружения
+### 2. Create a virtual environment
 ```bash
 python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Установка зависимостей
+### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Настройка .env файла
+### 4. Configure the .env file
 
-Убедитесь, что в файле `.env` указаны ваши учетные данные:
+Make sure your credentials are set in the `.env` file:
 
 ```env
 OPENAI_API_KEY=sk-proj-...
 FRONTEND_ORIGIN=http://localhost:5000
 ```
 
-## Запуск приложения
+## Run the application
 
 ```bash
 python app.py
 ```
 
-Приложение будет доступно по адресу: `http://localhost:5000`
+The app will be available at: `http://localhost:5000`
 
-## Структура проекта
+## Project structure
 
 ```
 StepToLife/
-├── app.py                 # Основное Flask приложение
-├── requirements.txt       # Зависимости проекта
-├── .env                   # Переменные окружения
-├── agents/               # Пакет с AI агентами
+├── app.py                 # Main Flask application
+├── requirements.txt       # Project dependencies
+├── .env                   # Environment variables
+├── agents/                # AI agents package
 │   ├── __init__.py
-│   ├── base_agent.py     # Базовый класс агента
-│   ├── initial_agent.py  # Агент начальной консультации
-│   ├── language_agent.py # Агент обучения языку
-│   ├── resume_agent.py   # Агент создания резюме
-│   └── job_agent.py      # Агент поиска работы
-├── templates/            # HTML шаблоны
-│   └── index.html        # Основная страница с табами
-├── static/               # Статические файлы
-│   ├── style.css         # Стили приложения
-│   └── script.js         # Клиентский JavaScript
-└── resumes/             # Папка для сохранения PDF резюме
+│   ├── base_agent.py      # Base agent class
+│   ├── initial_agent.py   # Initial consultation agent
+│   ├── language_agent.py  # Language learning agent
+│   ├── resume_agent.py    # Resume creation agent
+│   └── job_agent.py       # Job search agent
+├── templates/             # HTML templates
+│   └── index.html         # Main page with tabs
+├── static/                # Static files
+│   ├── style.css          # Application styles
+│   └── script.js          # Client-side JavaScript
+└── resumes/               # Folder for saved resume PDFs
 ```
 
 ## API Endpoints
 
 ### POST /api/chat/initial
-Отправка сообщения первому агенту (начальная консультация)
+Send a message to the first agent (initial consultation)
 
 **Request:**
 ```json
 {
   "user_id": "user_123",
-  "message": "Хочу найти работу, я из маргинализированной группы"
+  "message": "I want to find a job, I am from a marginalized group"
 }
 ```
 
@@ -90,59 +90,59 @@ StepToLife/
 ```json
 {
   "success": true,
-  "message": "Ответ агента...",
+  "message": "Agent response...",
   "user_info": {...},
   "knows_slovak": false
 }
 ```
 
 ### POST /api/chat/language
-Отправка сообщения агенту обучения языку
+Send a message to the language learning agent
 
 **Request:**
 ```json
 {
   "user_id": "user_123",
-  "message": "Научи меня приветствию",
+  "message": "Teach me a greeting",
   "lesson_level": "beginner"
 }
 ```
 
 ### POST /api/chat/resume
-Отправка информации для создания резюме
+Send information for resume creation
 
 **Request:**
 ```json
 {
   "user_id": "user_123",
-  "message": "Мое имя Иван Петров"
+  "message": "My name is Ivan Petrov"
 }
 ```
 
 ### POST /api/chat/jobs
-Поиск работы на основе резюме
+Search for jobs based on the resume
 
 **Request:**
 ```json
 {
   "user_id": "user_123",
-  "message": "Найди для меня работу"
+  "message": "Find a job for me"
 }
 ```
 
 ### GET /api/generate-pdf/{user_id}
-Скачивание PDF версии резюме
+Download the PDF version of the resume
 
-## Особенности
+## Highlights
 
-- 🤖 Использование GPT-4o-mini для натурального взаимодействия
-- 📚 Интерактивные микро-уроки по словацкому языку
-- 📄 Автоматическое генерирование резюме в PDF формате
-- 🔍 Рекомендация вакансий на основе профиля пользователя
-- 🎯 Поддержка маргинализированных групп населения
-- 💬 Четыре специализированных AI агента
+- 🤖 Uses GPT-4o-mini for natural interaction
+- 📚 Interactive micro-lessons in Slovak
+- 📄 Automatic PDF resume generation
+- 🔍 Job recommendations based on user profile
+- 🎯 Support for marginalized groups
+- 💬 Four specialized AI agents
 
-## Технологический стек
+## Tech stack
 
 - **Backend:** Flask 2.3.0
 - **Frontend:** HTML5, CSS3, Vanilla JavaScript
@@ -150,10 +150,10 @@ StepToLife/
 - **PDF Generation:** ReportLab, fpdf2
 - **Environment:** python-dotenv
 
-## Поддержка
+## Support
 
-Для вопросов и проблем, свяжитесь с командой разработки.
+For questions or issues, contact the development team.
 
-## Лицензия
+## License
 
 MIT License

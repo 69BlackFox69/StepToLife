@@ -20,23 +20,23 @@ import traceback
 
 load_dotenv()
 
-# Защита от UnicodeEncodeError в Windows-консолях (cp1252/cp866).
+
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 if hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-# Инициализация Flask приложения
+
 app = Flask(__name__)
 
-# Конфигурация
+
 config_name = os.getenv('FLASK_ENV', 'development')
 app.config.from_object(config[config_name])
 
-# CORS
+
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Глобальная обработка ошибок
+
 @app.errorhandler(400)
 def bad_request(error):
     return jsonify({'success': False, 'message': 'Неверный запрос'}), 400
@@ -49,7 +49,7 @@ def not_found(error):
 def internal_error(error):
     return jsonify({'success': False, 'message': 'Внутренняя ошибка сервера'}), 500
 
-# Инициализация агентов (с обработкой ошибок)
+
 try:
     initial_agent = InitialAgent()
     language_agent = LanguageAgent()
@@ -65,7 +65,7 @@ except Exception as e:
     print(f"[ERROR] Ошибка при инициализации агентов: {e}")
     raise
 
-# Хранилище пользовательских сессий
+
 user_sessions = {}
 resource_resolver = ResourceResolver()
 
@@ -110,27 +110,27 @@ def chat_initial():
                 'intake': {}
             }
         
-        # Добавляем сообщение пользователя в историю
+
         user_sessions[user_id]['history'].append({
             'role': 'user',
             'content': message
         })
         
-        # Получаем ответ от агента
+
         response = initial_agent.process(message, user_sessions[user_id]['history'])
         
-        # Сохраняем ответ в историю
+
         user_sessions[user_id]['history'].append({
             'role': 'assistant',
             'content': response['message']
         })
         
-        # Обновляем информацию о пользователе
+
         if 'user_info' in response:
             user_sessions[user_id]['user_info'].update(response['user_info'])
             user_sessions[user_id]['intake'].update(response['user_info'])
         
-        # Проверяем, знает ли пользователь словацкий
+
         if 'knows_slovak' in response:
             user_sessions[user_id]['knows_slovak'] = response['knows_slovak']
         
@@ -159,7 +159,7 @@ def chat_language():
         if user_id not in user_sessions:
             user_sessions[user_id] = {}
         
-        # Инициализируем язык сессию если её ещё нет
+
         if 'language_history' not in user_sessions[user_id]:
             user_sessions[user_id]['language_history'] = []
             user_sessions[user_id]['lesson_level'] = 'beginner'
@@ -200,7 +200,7 @@ def chat_resume():
         if user_id not in user_sessions:
             user_sessions[user_id] = {}
         
-        # Инициализируем резюме сессию если её ещё нет
+
         if 'resume_history' not in user_sessions[user_id]:
             user_sessions[user_id]['resume_history'] = []
             user_sessions[user_id]['resume_data'] = {}
@@ -259,7 +259,7 @@ def chat_jobs():
         if user_id not in user_sessions:
             user_sessions[user_id] = {}
         
-        # Инициализируем джобс сессию если её ещё нет
+
         if 'jobs_history' not in user_sessions[user_id]:
             user_sessions[user_id]['jobs_history'] = []
             user_sessions[user_id]['resume_data'] = user_sessions[user_id].get('resume_data', {})
@@ -269,7 +269,7 @@ def chat_jobs():
             'content': message
         })
         
-        # Передаём данные резюме в агент
+
         resume_data = user_sessions[user_id].get('resume_data', {})
         response = job_agent.process(message, user_sessions[user_id]['jobs_history'], resume_data)
         
@@ -339,8 +339,8 @@ def chat_career():
         else:
             session['history'].append({'role': 'user', 'content': user_message})
 
-            # Страховка: на первом вопросе про язык при ответе "нет"
-            # принудительно переводим в фазу language_offer.
+
+
             normalized = ' '.join((user_message or '').lower().replace('!', ' ').replace('.', ' ').replace(',', ' ').replace('?', ' ').replace(':', ' ').replace(';', ' ').replace('"', ' ').replace("'", ' ').replace('`', ' ').split())
             first_question_no = (
                 session.get('phase') == 'interview'
