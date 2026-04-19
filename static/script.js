@@ -330,6 +330,11 @@ async function sendPlanMessage() {
         userState.careerPhase = data.phase || userState.careerPhase;
         appendPlanChatMessage('assistant', data.message);
 
+        if (data.phase === 'redirect_language') {
+            showCareerTabs('language-step');
+            return;
+        }
+
         if (data.phase === 'approved' || data.plan_confirmed === true) {
             approvePlanAndStart(false);
         }

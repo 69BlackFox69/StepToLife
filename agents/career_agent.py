@@ -59,11 +59,26 @@ class CareerAgent(BaseAgent):
 
     def _is_yes(self, text):
         normalized = self._normalize(text)
-        return any(word in normalized for word in ['да', 'есть', 'знаю', 'имею', 'конечно', 'ok', 'okay', 'ок'])
+        yes_tokens = [
+            'да', 'есть', 'знаю', 'имею', 'конечно', 'ok', 'okay', 'ок', 'yes', 'yep',
+            'da', 'дa', 'ð´ð°'
+        ]
+        if normalized in {'y', 'д', 'ага', 'угу', 'ye', 'ys'}:
+            return True
+        if normalized.startswith('да') or normalized.startswith('ok') or normalized.startswith('ye'):
+            return True
+        return any(word in normalized for word in yes_tokens)
 
     def _is_no(self, text):
         normalized = self._normalize(text)
-        return any(word in normalized for word in ['нет', 'не имею', 'не знаю', 'no', 'nope'])
+        no_tokens = [
+            'нет', 'не имею', 'не знаю', 'no', 'nope', 'нету', 'неа', 'net', 'ð½ðµñ‚'
+        ]
+        if normalized in {'n', 'н', 'не'}:
+            return True
+        if normalized.startswith('нет') or normalized.startswith('не ') or normalized.startswith('no') or normalized.startswith('net'):
+            return True
+        return any(word in normalized for word in no_tokens)
 
     def _parse_discomforts(self, text):
         normalized = (text or '').lower()
@@ -141,6 +156,38 @@ class CareerAgent(BaseAgent):
                 'characteristics': characteristics,
             }
 
+        if phase == 'language_offer':
+            normalized = self._normalize(user_message)
+            if self._is_yes(normalized):
+                return {
+                    'success': True,
+                    'message': 'Отличный выбор. Перевожу вас на короткий языковой курс.',
+                    'phase': 'redirect_language',
+                    'question_index': question_index,
+                    'answers': answers,
+                    'characteristics': characteristics,
+                }
+
+            if self._is_no(normalized):
+                next_question = questions[1]['question']
+                return {
+                    'success': True,
+                    'message': f'Хорошо, продолжаем интервью. {next_question}',
+                    'phase': 'interview',
+                    'question_index': 2,
+                    'answers': answers,
+                    'characteristics': characteristics,
+                }
+
+            return {
+                'success': True,
+                'message': 'Напишите, пожалуйста, да или нет: хотите пройти короткий курс словацкого сейчас?',
+                'phase': 'language_offer',
+                'question_index': question_index,
+                'answers': answers,
+                'characteristics': characteristics,
+            }
+
         if phase == 'interview':
             current_index = max(question_index - 1, 0)
             current_field = questions[current_index]['field']
@@ -179,6 +226,16 @@ class CareerAgent(BaseAgent):
                 'field': current_field,
                 'value': answer_text,
             })
+
+            if current_field == 'language' and characteristics.get('language') == 'no':
+                return {
+                    'success': True,
+                    'message': 'Понял. Хотите перед продолжением пройти короткий обучающий курс словацкого?',
+                    'phase': 'language_offer',
+                    'question_index': question_index,
+                    'answers': answers,
+                    'characteristics': characteristics,
+                }
 
             if question_index < len(questions):
                 next_question = questions[question_index]['question']

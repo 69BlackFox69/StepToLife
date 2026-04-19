@@ -1,4 +1,5 @@
 import os
+import sys
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
@@ -18,6 +19,12 @@ from datetime import datetime
 import traceback
 
 load_dotenv()
+
+# Защита от UnicodeEncodeError в Windows-консолях (cp1252/cp866).
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 # Инициализация Flask приложения
 app = Flask(__name__)
@@ -331,12 +338,40 @@ def chat_career():
             )
         else:
             session['history'].append({'role': 'user', 'content': user_message})
-            response = career_agent.process(
-                user_message=user_message,
-                conversation_history=session['history'],
-                session_state=session,
-                is_init=False,
+
+            # Страховка: на первом вопросе про язык при ответе "нет"
+            # принудительно переводим в фазу language_offer.
+            normalized = ' '.join((user_message or '').lower().replace('!', ' ').replace('.', ' ').replace(',', ' ').replace('?', ' ').replace(':', ' ').replace(';', ' ').replace('"', ' ').replace("'", ' ').replace('`', ' ').split())
+            first_question_no = (
+                session.get('phase') == 'interview'
+                and int(session.get('question_index', 0)) == 1
+                and (
+                    normalized in {'нет', 'не', 'n', 'н', 'no', 'net', 'неа'}
+                    or normalized.startswith('нет')
+                    or normalized.startswith('не ')
+                    or normalized.startswith('no')
+                    or normalized.startswith('net')
+                )
             )
+
+            if first_question_no:
+                session['answers'].append({'field': 'language', 'value': user_message})
+                session['characteristics']['language'] = 'no'
+                response = {
+                    'success': True,
+                    'message': 'Понял. Хотите перед продолжением пройти короткий обучающий курс словацкого?',
+                    'phase': 'language_offer',
+                    'question_index': 1,
+                    'answers': session['answers'],
+                    'characteristics': session['characteristics'],
+                }
+            else:
+                response = career_agent.process(
+                    user_message=user_message,
+                    conversation_history=session['history'],
+                    session_state=session,
+                    is_init=False,
+                )
 
         if response.get('success'):
             session['phase'] = response.get('phase', session['phase'])

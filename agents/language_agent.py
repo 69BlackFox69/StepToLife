@@ -33,24 +33,60 @@ class LanguageAgent(BaseAgent):
         super().__init__(system_prompt)
     
     def process(self, user_message, conversation_history, lesson_level='beginner'):
-        """Обработать сообщение и дать урок"""
-        
-        # Добавляем информацию о уровне в контекст
-        if conversation_history:
-            enhanced_history = conversation_history.copy()
-        else:
-            enhanced_history = []
-        
-        # Добавляем информацию о уровне урока в систему сообщений
+        """Обработать сообщение и дать первый микро-урок"""
+
+        normalized = ' '.join((user_message or '').lower().replace('!', ' ').replace('.', ' ').replace(',', ' ').replace('?', ' ').replace(':', ' ').replace(';', ' ').replace('"', ' ').replace("'", ' ').replace('`', ' ').split())
+        start_phrases = {
+            'да',
+            'готов',
+            'готова',
+            'начать',
+            'поехали',
+            'да, помоги мне начать говорить по словацки',
+            'помоги мне начать говорить по словацки',
+            'помоги мне выучить словацкий',
+            'хочу учить словацкий',
+            'yes',
+            'ok',
+            'okay',
+        }
+
+        if normalized in start_phrases or normalized.startswith('да') or 'помоги мне' in normalized:
+            lesson = (
+                "Отлично. Начнем с самого простого.\n\n"
+                "Мини-урок 1: приветствие.\n"
+                "Запомни 3 короткие фразы:\n"
+                "- Dobrý deň - Добрый день\n"
+                "- Ahoj - Привет\n"
+                "- Ďakujem - Спасибо\n\n"
+                "Как использовать на работе: скажи «Dobrý deň» при входе и «Ďakujem» в конце разговора.\n\n"
+                "Теперь попробуй написать: Dobrý deň."
+            )
+            return {
+                'success': True,
+                'message': lesson,
+                'lesson_level': lesson_level,
+                'lesson_step': 1
+            }
+
+        if not normalized or normalized in {'нет', 'не', 'no'}:
+            return {
+                'success': True,
+                'message': 'Напишите "да", если хотите начать короткий урок словацкого.',
+                'lesson_level': lesson_level,
+                'lesson_step': 0
+            }
+
+        enhanced_history = conversation_history.copy() if conversation_history else []
         level_info = f"\n[Уровень урока: {lesson_level}]"
-        
         response = super().process(user_message + level_info, enhanced_history)
-        
+
         if not response['success']:
             return response
-        
+
         return {
             'success': True,
             'message': response['message'],
-            'lesson_level': lesson_level
+            'lesson_level': lesson_level,
+            'lesson_step': 1
         }

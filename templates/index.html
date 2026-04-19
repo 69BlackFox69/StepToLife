@@ -121,40 +121,27 @@
                 </div>
             </div>
 
-            <!-- Шаг 2: Фразы -->
+            <!-- Шаг 2: Мини-уроки словацкого -->
             <div class="tab-content" id="language-step">
                 <div class="tab-header">
-                    <h2>Готовые фразы</h2>
-                    <p>Что говорить при встрече с работодателем</p>
+                    <h2>Мини-уроки словацкого</h2>
+                    <p>Короткий живой чат с первым базовым уроком</p>
                 </div>
 
-                <div class="phrases-container">
-                    <div class="phrase-card">
-                        <h3>Приветствие</h3>
-                        <p class="phrase-text">Dobrý deň, som rád/rada, že som tu.</p>
-                        <button class="phrase-btn" onclick="speakPhrase('Dobrý deň, som rád/rada, že som tu.')">🔊 Озвучить</button>
+                <div class="chat-container">
+                    <div class="chat-messages" id="language-chat">
+                        <div class="message assistant">
+                            <p>Привет, я помогу тебе выучить словацкий язык, готов начать?</p>
+                        </div>
                     </div>
 
-                    <div class="phrase-card">
-                        <h3>О себе</h3>
-                        <p class="phrase-text">Som motivovaný/motivovaná a rád/rada sa učím.</p>
-                        <button class="phrase-btn" onclick="speakPhrase('Som motivovaný/motivovaná a rád/rada sa učím.')">🔊 Озвучить</button>
-                    </div>
-
-                    <div class="phrase-card">
-                        <h3>Вопрос</h3>
-                        <p class="phrase-text">Môžete mi prosím povedať viac o tejto pozícii?</p>
-                        <button class="phrase-btn" onclick="speakPhrase('Môžete mi prosím povedať viac o tejto pozícii?')">🔊 Озвучить</button>
-                    </div>
-
-                    <div class="phrase-card">
-                        <h3>Спасибо</h3>
-                        <p class="phrase-text">Ďakujem za čas. Som vďačný/vďačná za príležitosť.</p>
-                        <button class="phrase-btn" onclick="speakPhrase('Ďakujem za čas. Som vďačný/vďačná za príležitosť.')">🔊 Озвучить</button>
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="language-input" class="chat-input" placeholder="Напишите: да / помоги мне начать говорить по словацки" />
+                            <button class="send-btn" onclick="sendLanguageMessage()">Отправить</button>
+                        </div>
                     </div>
                 </div>
-
-                <button class="action-btn" onclick="stepComplete(2)">✅ Фразы запомнены</button>
             </div>
 
             <!-- Шаг 3: Поиск работы -->
