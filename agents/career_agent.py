@@ -15,6 +15,7 @@ class CareerAgent(BaseAgent):
 
     When the interview is finished, create the plan in English with 3-5 steps based on user answers.
     The plan should be concrete, supportive, and free of bureaucracy.
+    Format the final plan as simple Markdown with a short intro, a numbered list of steps, and a final question on a separate line.
     """
         super().__init__(system_prompt)
 

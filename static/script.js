@@ -476,7 +476,7 @@ function renderMessageContent(container, role, messageText) {
     if (role === 'assistant' && !container.classList.contains('loading')) {
         container.innerHTML = `
             <div class="message-row">
-                <p>${safeText}</p>
+                <div class="message-markdown">${renderSimpleMarkdown(safeText)}</div>
                 <button type="button" class="speak-btn" aria-label="Play voice message">Speak</button>
             </div>
         `;
@@ -491,6 +491,64 @@ function renderMessageContent(container, role, messageText) {
     }
 
     container.innerHTML = `<p>${safeText}</p>`;
+}
+
+function renderSimpleMarkdown(text) {
+    const normalized = (text || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
+
+    const lines = normalized.split('\n');
+    const blocks = [];
+    let listItems = [];
+
+    const flushList = () => {
+        if (!listItems.length) return;
+        blocks.push(`<ul>${listItems.map(item => `<li>${item}</li>`).join('')}</ul>`);
+        listItems = [];
+    };
+
+    const formatInline = (value) => {
+        return value
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    };
+
+    lines.forEach(rawLine => {
+        const line = rawLine.trim();
+
+        if (!line) {
+            flushList();
+            return;
+        }
+
+        const heading = line.match(/^(#{1,3})\s+(.*)$/);
+        if (heading) {
+            flushList();
+            const level = heading[1].length + 2;
+            blocks.push(`<h${level}>${formatInline(heading[2])}</h${level}>`);
+            return;
+        }
+
+        const bullet = line.match(/^[-*•]\s+(.*)$/);
+        if (bullet) {
+            listItems.push(formatInline(bullet[1]));
+            return;
+        }
+
+        const numbered = line.match(/^\d+[.)]\s+(.*)$/);
+        if (numbered) {
+            listItems.push(formatInline(numbered[1]));
+            return;
+        }
+
+        flushList();
+        blocks.push(`<p>${formatInline(line)}</p>`);
+    });
+
+    flushList();
+
+    return blocks.join('');
 }
 
 function wireSpeechButtonsForExistingMessages() {

@@ -29,6 +29,8 @@ Approach:
 - Provide formatting advice for the Slovak market
 - Suggest improvements and rephrasing
 
+When summarizing collected information, use simple Markdown with short section headings and bullet points so the result is easy to scan.
+
 When enough information is collected:
 - Say something like "We seem to have enough information for the resume"
 - Offer PDF download
