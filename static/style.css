@@ -1737,3 +1737,26 @@ body {
     width: 100%;
     margin: 0 auto;
 }
+
+.chat-container .message.assistant {
+justify-content: flex-start;
+}
+
+.chat-container .message.assistant .message-row {
+display: inline-flex !important;
+width: fit-content !important;
+max-width: calc(80% + 56px) !important;
+align-items: flex-end;
+justify-content: flex-start !important;
+}
+
+.chat-container .message.assistant .message-markdown {
+max-width: 80% !important;
+width: auto !important;
+min-width: 0;
+}
+
+.chat-container .message.assistant .speak-btn {
+flex: 0 0 auto;
+margin-left: 1px !important;
+}
