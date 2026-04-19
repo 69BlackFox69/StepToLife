@@ -47,7 +47,7 @@ function showScreen(screenId) {
     }
 }
 
-function showCareerTabs(tabName = 'resume-step') {
+function showCareerTabs(tabName = 'jobs-step') {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.style.display = 'none';
     });
@@ -363,7 +363,7 @@ function approvePlanAndStart(sendToAgent = true) {
     }
 
     userState.planApproved = true;
-    showCareerTabs('resume-step');
+    showScreen('screen-resume-chat');
 }
 
 // ===== TABS =====
@@ -384,6 +384,11 @@ function openTab(tabName) {
 }
 
 function stepComplete(stepNum) {
+    if (stepNum === 1) {
+        window.location.reload();
+        return;
+    }
+
     const statusEl = document.getElementById(`status-${stepNum}`);
     if (statusEl) {
         statusEl.innerHTML = '✅ Completed';

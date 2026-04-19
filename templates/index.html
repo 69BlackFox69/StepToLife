@@ -113,21 +113,11 @@
             </div>
         </div>
 
-        <!-- ВКЛАДКИ ДЛЯ ШАГОВ МАРШРУТА -->
-        <div class="tabs-container" id="tabs-container" style="display:none;">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="resume-step">1. Resume</button>
-                <button class="tab-btn" data-tab="jobs-step">2. Search</button>
-                <button class="tab-btn" data-tab="interview-step">3. Interview</button>
-                <button class="tab-btn" data-tab="initial">General</button>
-            </div>
-
-            <!-- Шаг 1: Резюме -->
-            <div class="tab-content active" id="resume-step">
-                <div class="tab-header">
-                    <h2>Resume Creation</h2>
-                    <p>Help with preparing your resume for the Slovak job market</p>
-                </div>
+        <!-- ЭКРАН 5: Резюме (отдельный блок) -->
+        <div class="screen" id="screen-resume-chat" style="display:none;">
+            <div class="screen-content">
+                <h2>Resume Creation</h2>
+                <p class="screen-subtitle">Help with preparing your resume for the Slovak job market</p>
 
                 <div class="chat-container">
                     <div class="chat-messages" id="resume-chat">
@@ -147,9 +137,18 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Шаг 2: Поиск работы -->
-            <div class="tab-content" id="jobs-step">
+        <!-- ВКЛАДКИ ДЛЯ ШАГОВ МАРШРУТА -->
+        <div class="tabs-container" id="tabs-container" style="display:none;">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="jobs-step">1. Search</button>
+                <button class="tab-btn" data-tab="interview-step">2. Interview</button>
+                <button class="tab-btn" data-tab="initial">General</button>
+            </div>
+
+            <!-- Шаг 1: Поиск работы -->
+            <div class="tab-content active" id="jobs-step">
                 <div class="tab-header">
                     <h2>Job Search</h2>
                     <p>Where to find vacancies in Slovakia</p>
@@ -179,7 +178,7 @@
                 <button class="action-btn" onclick="stepComplete(3)">✅ I understand where to search</button>
             </div>
 
-            <!-- Шаг 4: Подготовка к собеседованию -->
+            <!-- Шаг 2: Подготовка к собеседованию -->
             <div class="tab-content" id="interview-step">
                 <div class="tab-header">
                     <h2>Interview Preparation</h2>
