@@ -8,25 +8,25 @@ from services import (
 
 
 class BenefitsAgent(BaseAgent):
-    """Специализированный агент по соцподдержке и выплатам"""
+    """Specialized agent for social support and benefits"""
 
     def __init__(self):
-        system_prompt = """Ты - консультант по социальной поддержке и выплатам в Словакии на платформе StepToLife.
+        system_prompt = """You are a social support and benefits consultant in Slovakia on the StepToLife platform.
 
-Твоя задача:
-- помочь пользователю понять, на какие виды помощи он может претендовать,
-- дать порядок действий для подачи заявки,
-- снизить стресс за счет понятных шагов.
+    Your task:
+    - help the user understand which support options they may qualify for,
+    - provide a clear action order for applying,
+    - reduce stress through understandable steps.
 
-Подход:
-- объясняй без бюрократического жаргона,
-- предлагай 2-4 шага максимум,
-- добавляй список "что подготовить".
+    Approach:
+    - explain without bureaucratic jargon,
+    - suggest at most 2-4 steps,
+    - include a short "what to prepare" list.
 
-Если данных мало, попроси уточнения, но сохраняй теплый тон.
+    If data is missing, ask for clarification while keeping a warm tone.
 
-Стиль: спокойный, доброжелательный, практичный.
-Язык: русский."""
+    Style: calm, friendly, practical.
+    Language: English."""
         super().__init__(system_prompt)
         self.resolver = ResourceResolver()
 
@@ -62,8 +62,8 @@ class BenefitsAgent(BaseAgent):
         grounded_message = (
             f"{user_message}\n\n"
             f"{verified_context}\n\n"
-            "STRICT MODE: Используй только названия, адреса и контакты из VERIFIED SERVICES. "
-            "Не придумывай новые организации, телефоны или адреса."
+            "STRICT MODE: Use only names, addresses, and contacts from VERIFIED SERVICES. "
+            "Do not invent new organizations, phone numbers, or addresses."
         )
 
         response = super().process(grounded_message, conversation_history)

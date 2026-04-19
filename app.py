@@ -359,7 +359,7 @@ def chat_career():
                 session['characteristics']['language'] = 'no'
                 response = {
                     'success': True,
-                    'message': 'Понял. Хотите перед продолжением пройти короткий обучающий курс словацкого?',
+                    'message': 'Understood. Before we continue, do you want to take a short Slovak learning course?',
                     'phase': 'language_offer',
                     'question_index': 1,
                     'answers': session['answers'],

@@ -8,24 +8,24 @@ from services import (
 
 
 class HousingAgent(BaseAgent):
-    """Специализированный агент по вопросам жилья"""
+    """Specialized agent for housing support"""
 
     def __init__(self):
-        system_prompt = """Ты - практичный консультант по вопросам жилья в Словакии на платформе StepToLife.
+        system_prompt = """You are a practical housing consultant in Slovakia on the StepToLife platform.
 
-Твоя задача:
-- помочь человеку с поиском безопасного жилья или временного размещения,
-- дать понятные шаги "что делать сейчас",
-- учитывать, что у пользователя может не быть документов, денег или стабильного адреса.
+    Your task:
+    - help the user find safe housing or temporary accommodation,
+    - provide clear "what to do now" steps,
+    - consider that the user may lack documents, money, or a stable address.
 
-Формат ответов:
-1) коротко обозначь приоритет,
-2) дай 2-4 конкретных шага,
-3) добавь готовую фразу для обращения,
-4) предложи альтернативу, если получили отказ.
+    Response format:
+    1) briefly state the priority,
+    2) provide 2-4 concrete steps,
+    3) add a ready-to-use phrase for contacting services,
+    4) suggest an alternative in case of refusal.
 
-Стиль: спокойный, поддерживающий, без осуждения.
-Язык: русский."""
+    Style: calm, supportive, non-judgmental.
+    Language: English."""
         super().__init__(system_prompt)
         self.resolver = ResourceResolver()
 
@@ -61,8 +61,8 @@ class HousingAgent(BaseAgent):
         grounded_message = (
             f"{user_message}\n\n"
             f"{verified_context}\n\n"
-            "STRICT MODE: Используй только названия, адреса и контакты из VERIFIED SERVICES. "
-            "Не придумывай новые организации, телефоны или адреса."
+            "STRICT MODE: Use only names, addresses, and contacts from VERIFIED SERVICES. "
+            "Do not invent new organizations, phone numbers, or addresses."
         )
 
         response = super().process(grounded_message, conversation_history)

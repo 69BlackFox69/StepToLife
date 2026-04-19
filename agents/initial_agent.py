@@ -3,41 +3,41 @@ from agents.base_agent import BaseAgent
 
 
 class InitialAgent(BaseAgent):
-    """Первый агент - intake, маршрутизация и оркестрация проблемных агентов"""
+    """First agent: intake, routing, and specialized-agent orchestration"""
 
     def __init__(self):
-        system_prompt = """Ты - первый координационный агент StepToLife.
+        system_prompt = """You are the first coordination agent of StepToLife.
 
-Твоя задача:
-- коротко понять ситуацию пользователя,
-- определить основной тип проблемы,
-- направить к правильному специализированному агенту,
-- дать адаптивный пошаговый план.
+Your task:
+- quickly understand the user's situation,
+- identify the primary problem type,
+- route to the right specialized agent,
+- provide an adaptive step-by-step plan.
 
-Проблемные направления:
-1) employment - трудоустройство
-2) housing - жилье
-3) documents - документы/легализация
-4) benefits - соцподдержка и выплаты
-5) emergency - экстренный случай
+Problem domains:
+1) employment
+2) housing
+3) documents/legalization
+4) benefits/social support
+5) emergency
 
-Правила общения:
-- используй мягкий, неосуждающий тон,
-- задавай только нужные уточняющие вопросы,
-- не перегружай длинными ответами,
-- если ситуация рискованная, приоритет - безопасность.
+Communication rules:
+- use a soft, non-judgmental tone,
+- ask only necessary clarifying questions,
+- avoid long overloaded responses,
+- if the situation is risky, prioritize safety.
 
-Помни про intake-поля:
+Intake fields:
 - has_documents
 - has_stable_address
 - language_level
 - urgency
 
-Язык: русский."""
+Language: English."""
         super().__init__(system_prompt)
 
     def process(self, user_message, conversation_history):
-        """Обработать сообщение и построить адаптивный маршрут"""
+        """Process message and build adaptive route"""
 
         response = super().process(user_message, conversation_history)
 
@@ -47,7 +47,7 @@ class InitialAgent(BaseAgent):
         message = response['message']
         user_info = self._extract_user_info(user_message)
 
-        # Сохраняем совместимость со старым флагом
+        # Backward compatibility with legacy flag
         knows_slovak = self._detect_knows_slovak(user_message, user_info)
         if knows_slovak is not None:
             user_info['knows_slovak'] = knows_slovak
@@ -81,26 +81,31 @@ class InitialAgent(BaseAgent):
         return result
 
     def _extract_user_info(self, user_message):
-        """Извлечь intake-данные и тип проблемы"""
-        text = user_message.lower()
+        """Extract intake data and problem type"""
+        text = (user_message or '').lower()
         user_info = {}
 
         problem_keywords = {
             'emergency': [
-                'срочно', 'экстренно', 'опасно', 'насилие', 'угроза',
-                'голод', 'нет еды', 'на улице', 'боюсь', 'emergency', 'danger'
+                'urgent', 'emergency', 'danger', 'violence', 'threat',
+                'no food', 'hungry', 'street', 'afraid', 'suicide', 'self-harm',
+                'срочно', 'экстренно', 'опасно', 'насилие', 'угроза', 'голод', 'на улице', 'боюсь'
             ],
             'housing': [
-                'жиль', 'квартир', 'общежит', 'ночлег', 'приют', 'shelter', 'homeless'
+                'housing', 'apartment', 'rent', 'shelter', 'homeless', 'no place to stay',
+                'жиль', 'квартир', 'общежит', 'ночлег', 'приют'
             ],
             'documents': [
-                'документ', 'паспорт', 'виза', 'внж', 'легализац', 'permit', 'residence'
+                'documents', 'passport', 'visa', 'permit', 'residence', 'legalization',
+                'документ', 'паспорт', 'виза', 'внж', 'легализац'
             ],
             'benefits': [
-                'пособи', 'выплат', 'соц', 'помощ', 'субсид', 'benefit', 'allowance'
+                'benefit', 'allowance', 'social support', 'financial help', 'subsidy',
+                'пособи', 'выплат', 'соц', 'помощ', 'субсид'
             ],
             'employment': [
-                'работ', 'ваканс', 'трудоустро', 'собесед', 'резюме', 'job', 'work'
+                'job', 'work', 'vacancy', 'interview', 'resume', 'employment',
+                'работ', 'ваканс', 'трудоустро', 'собесед', 'резюме'
             ],
         }
 
@@ -109,55 +114,55 @@ class InitialAgent(BaseAgent):
                 user_info['problem_type'] = problem_type
                 break
 
-        # Intake: документы
-        if any(w in text for w in ['нет документов', 'без документов', 'потерял паспорт', 'undocumented']):
+        # Intake: documents
+        if any(w in text for w in ['no documents', 'without documents', 'lost passport', 'undocumented', 'нет документов', 'без документов', 'потерял паспорт']):
             user_info['has_documents'] = 'no'
-        elif any(w in text for w in ['есть документы', 'все документы', 'документы в порядке']):
+        elif any(w in text for w in ['have documents', 'all documents', 'documents are fine', 'есть документы', 'документы в порядке']):
             user_info['has_documents'] = 'yes'
 
-        # Intake: стабильный адрес
-        if any(w in text for w in ['нет жилья', 'нет адреса', 'живу на улице', 'без жилья', 'no address']):
+        # Intake: stable address
+        if any(w in text for w in ['no housing', 'no address', 'living on the street', 'without housing', 'no place to stay', 'нет жилья', 'нет адреса', 'живу на улице', 'без жилья']):
             user_info['has_stable_address'] = 'no'
-        elif any(w in text for w in ['есть жилье', 'есть адрес', 'стабильный адрес', 'снимаю квартиру']):
+        elif any(w in text for w in ['have housing', 'have address', 'stable address', 'rent apartment', 'есть жилье', 'есть адрес', 'стабильный адрес', 'снимаю квартиру']):
             user_info['has_stable_address'] = 'yes'
 
-        # Intake: уровень языка
-        if any(w in text for w in ['не знаю словацкий', 'плохо знаю словацкий', 'совсем не знаю']):
+        # Intake: language level
+        if any(w in text for w in ['do not know slovak', 'poor slovak', "don't know slovak", 'не знаю словацкий', 'плохо знаю словацкий', 'совсем не знаю']):
             user_info['language_level'] = 'none'
-        elif any(w in text for w in ['базовый словацкий', 'немного знаю словацкий']):
+        elif any(w in text for w in ['basic slovak', 'know a little slovak', 'базовый словацкий', 'немного знаю словацкий']):
             user_info['language_level'] = 'basic'
-        elif any(w in text for w in ['хорошо знаю словацкий', 'говорю по-словацки', 'свободно']):
+        elif any(w in text for w in ['speak slovak well', 'fluent slovak', 'говорю по-словацки', 'хорошо знаю словацкий', 'свободно']):
             user_info['language_level'] = 'intermediate'
 
-        # Intake: срочность
-        if any(w in text for w in ['срочно', 'прямо сейчас', 'экстренно', 'опасно', 'насилие']):
+        # Intake: urgency
+        if any(w in text for w in ['urgent', 'right now', 'emergency', 'danger', 'violence', 'срочно', 'прямо сейчас', 'экстренно', 'опасно', 'насилие']):
             user_info['urgency'] = 'high'
-        elif any(w in text for w in ['скоро', 'в ближайшие дни', 'критично', 'очень нужно']):
+        elif any(w in text for w in ['soon', 'next days', 'critical', 'very needed', 'скоро', 'в ближайшие дни', 'критично', 'очень нужно']):
             user_info['urgency'] = 'medium'
         else:
             user_info['urgency'] = 'low'
 
-        # Старое поле для совместимости
+        # Legacy field for compatibility
         if user_info.get('problem_type') == 'employment':
             user_info['goal'] = 'employment'
 
         return user_info
 
     def _detect_knows_slovak(self, user_message, user_info):
-        text = user_message.lower()
+        text = (user_message or '').lower()
         if user_info.get('language_level') in ['none', 'basic']:
             return False
         if user_info.get('language_level') == 'intermediate':
             return True
 
-        if any(word in text for word in ['да, знаю', 'знаю словацкий', 'говорю по-словацки', 'yes']):
+        if any(word in text for word in ['yes, i know', 'i know slovak', 'i speak slovak', 'yes', 'да, знаю', 'знаю словацкий', 'говорю по-словацки']):
             return True
-        if any(word in text for word in ['нет, не знаю', 'не знаю', 'плохо знаю', 'не говорю', 'no']):
+        if any(word in text for word in ["no, i don't", "i don't know", 'poor slovak', "i don't speak", 'no', 'нет, не знаю', 'не знаю', 'плохо знаю', 'не говорю']):
             return False
         return None
 
     def _should_create_plan(self, conversation_history, user_info):
-        """План создаем быстро в emergency и после короткого intake в остальных"""
+        """Create plan quickly in emergency and after short intake in other cases"""
         if user_info.get('problem_type') == 'emergency':
             return True
 
@@ -190,27 +195,27 @@ class InitialAgent(BaseAgent):
         agent_map = {
             'employment': {
                 'agent_name': 'JobAgent',
-                'agent_role': '🔍 Консультант по трудоустройству',
+                'agent_role': 'Job consultant',
                 'agent_api': '/api/chat/jobs'
             },
             'housing': {
                 'agent_name': 'HousingAgent',
-                'agent_role': '🏠 Консультант по жилью',
+                'agent_role': 'Housing consultant',
                 'agent_api': '/api/chat/housing'
             },
             'documents': {
                 'agent_name': 'DocumentsAgent',
-                'agent_role': '🪪 Консультант по документам',
+                'agent_role': 'Documents consultant',
                 'agent_api': '/api/chat/documents'
             },
             'benefits': {
                 'agent_name': 'BenefitsAgent',
-                'agent_role': '💶 Консультант по соцподдержке',
+                'agent_role': 'Benefits consultant',
                 'agent_api': '/api/chat/benefits'
             },
             'emergency': {
                 'agent_name': 'EmergencyAgent',
-                'agent_role': '🚨 Агент экстренной помощи',
+                'agent_role': 'Emergency support agent',
                 'agent_api': '/api/chat/emergency'
             },
         }
@@ -220,187 +225,187 @@ class InitialAgent(BaseAgent):
         if problem == 'emergency' or urgency == 'high':
             steps = [
                 {
-                    'tab': 'Экстренная помощь',
+                    'tab': 'Emergency',
                     'number': 1,
-                    'title': 'Стабилизируйте безопасность прямо сейчас',
-                    'description': 'Сделайте одно безопасное действие в ближайшие 5 минут.',
+                    'title': 'Stabilize safety right now',
+                    'description': 'Take one safe action in the next 5 minutes.',
                     'agent_name': 'EmergencyAgent',
-                    'agent_role': '🚨 Агент экстренной помощи',
+                    'agent_role': 'Emergency support agent',
                     'agent_api': '/api/chat/emergency',
                     'action_card': self._action_card(
-                        do_now='Перейдите в безопасное место или позвоните 112, если есть прямая угроза.',
-                        where='Ближайшее безопасное место: полицейский участок, больница, социальный центр.',
-                        what_to_say='Мне нужна срочная помощь. Я сейчас в опасности и мне нужно безопасное место.',
-                        bring_with_you='Телефон, любой документ, необходимые лекарства.',
-                        if_refused='Попросите соединить со старшим сотрудником и позвоните 112 повторно.'
+                        do_now='Move to a safe place or call 112 if there is direct threat.',
+                        where='Nearest safe location: police station, hospital, social center.',
+                        what_to_say='I need urgent help. I am in danger and need a safe place.',
+                        bring_with_you='Phone, any document, required medication.',
+                        if_refused='Ask to speak with a senior staff member and call 112 again.'
                     )
                 },
                 {
-                    'tab': 'Документы',
+                    'tab': 'Documents',
                     'number': 2,
-                    'title': 'Подготовьте минимальные данные для обращения',
-                    'description': 'Даже при отсутствии полного пакета документов можно начать оформление помощи.',
+                    'title': 'Prepare minimum information for support',
+                    'description': 'You can start support procedures even without a full document pack.',
                     'agent_name': 'DocumentsAgent',
-                    'agent_role': '🪪 Консультант по документам',
+                    'agent_role': 'Documents consultant',
                     'agent_api': '/api/chat/documents',
                     'action_card': self._action_card(
-                        do_now='Соберите имя, дату рождения, гражданство и любой имеющийся документ.',
-                        where='Муниципальная служба или миграционный офис.',
-                        what_to_say='Мне нужна первичная помощь и консультация по временной легализации.',
-                        bring_with_you='Любая справка, фото документа, контакты свидетеля/родственника.',
-                        if_refused='Попросите письменный отказ и обратитесь через НКО или бесплатную юрпомощь.'
+                        do_now='Gather name, date of birth, citizenship, and any available document.',
+                        where='Municipal service office or migration office.',
+                        what_to_say='I need first-response help and guidance on temporary legalization.',
+                        bring_with_you='Any paper, document photo, witness/relative contact.',
+                        if_refused='Request written refusal and contact NGO or free legal aid.'
                     )
                 },
             ]
-            estimated_time = '1-24 часа (экстренный режим)'
+            estimated_time = '1-24 hours (emergency mode)'
         elif problem == 'housing':
             steps = [
                 {
-                    'tab': 'Жилье',
+                    'tab': 'Housing',
                     'number': 1,
-                    'title': 'Найдите временное безопасное размещение',
-                    'description': 'Начните с временного решения, чтобы стабилизировать ситуацию.',
+                    'title': 'Find temporary safe accommodation',
+                    'description': 'Start with a temporary solution to stabilize your situation.',
                     'agent_name': 'HousingAgent',
-                    'agent_role': '🏠 Консультант по жилью',
+                    'agent_role': 'Housing consultant',
                     'agent_api': '/api/chat/housing',
                     'action_card': self._action_card(
-                        do_now='Свяжитесь с ближайшим shelter/кризисным центром и уточните место на сегодня.',
-                        where='Shelter, кризисный центр, муниципальный соцотдел.',
-                        what_to_say='Мне нужно временное безопасное жилье на ближайшие дни.',
-                        bring_with_you='Документ (если есть), телефон, базовые вещи.',
-                        if_refused='Запросите альтернативный адрес/контакт и обратитесь в НКО-партнер.'
+                        do_now='Contact the nearest shelter/crisis center and ask about availability today.',
+                        where='Shelter, crisis center, municipal social office.',
+                        what_to_say='I need temporary safe housing for the next few days.',
+                        bring_with_you='Document (if any), phone, basic personal items.',
+                        if_refused='Ask for an alternative address/contact and request NGO partner support.'
                     )
                 },
                 {
-                    'tab': 'Документы',
+                    'tab': 'Documents',
                     'number': 2,
-                    'title': 'Подготовьте документы для долгосрочного размещения',
-                    'description': 'Проверьте, какие документы нужны для аренды или поддержки.',
+                    'title': 'Prepare documents for long-term housing',
+                    'description': 'Check what documents are needed for renting or support programs.',
                     'agent_name': 'DocumentsAgent',
-                    'agent_role': '🪪 Консультант по документам',
+                    'agent_role': 'Documents consultant',
                     'agent_api': '/api/chat/documents',
                     'action_card': self._action_card(
-                        do_now='Составьте список доступных документов и недостающих позиций.',
-                        where='Миграционный офис/муниципалитет/бесплатная юрконсультация.',
-                        what_to_say='Нужен список документов для легального проживания и аренды.',
-                        bring_with_you='Паспорт/ID, регистрация, подтверждение дохода (если есть).',
-                        if_refused='Попросите чек-лист письменно и обратитесь в НКО для сопровождения.'
+                        do_now='Create a list of available and missing documents.',
+                        where='Migration office, municipality, or free legal consultation.',
+                        what_to_say='I need a document list for legal stay and renting.',
+                        bring_with_you='Passport/ID, registration, proof of income (if available).',
+                        if_refused='Request a written checklist and contact NGO support.'
                     )
                 }
             ]
-            estimated_time = '1-7 дней на стабилизацию жилья'
+            estimated_time = '1-7 days to stabilize housing'
         elif problem == 'documents':
             steps = [
                 {
-                    'tab': 'Документы',
+                    'tab': 'Documents',
                     'number': 1,
-                    'title': 'Определите приоритетный пакет документов',
-                    'description': 'Сначала соберите минимум, который позволяет запустить процесс.',
+                    'title': 'Identify your priority document pack',
+                    'description': 'First gather the minimum set that allows the process to start.',
                     'agent_name': 'DocumentsAgent',
-                    'agent_role': '🪪 Консультант по документам',
+                    'agent_role': 'Documents consultant',
                     'agent_api': '/api/chat/documents',
                     'action_card': self._action_card(
-                        do_now='Сфотографируйте/перепишите все доступные документы.',
-                        where='Дома или в офисе НКО с консультантом.',
-                        what_to_say='Помогите определить, какие документы нужны в первую очередь.',
-                        bring_with_you='Все имеющиеся документы и их копии.',
-                        if_refused='Попросите письменную причину и список, чего не хватает.'
+                        do_now='Photograph/write down all available documents.',
+                        where='At home or with an NGO consultant.',
+                        what_to_say='Help me identify which documents are needed first.',
+                        bring_with_you='All available documents and copies.',
+                        if_refused='Ask for written reasons and a missing-items list.'
                     )
                 },
                 {
-                    'tab': 'Соцподдержка',
+                    'tab': 'Benefits',
                     'number': 2,
-                    'title': 'Параллельно запустите доступную поддержку',
-                    'description': 'Пока идут документы, важно подключить базовые выплаты/помощь.',
+                    'title': 'Start available support in parallel',
+                    'description': 'While documents are in progress, connect basic support programs.',
                     'agent_name': 'BenefitsAgent',
-                    'agent_role': '💶 Консультант по соцподдержке',
+                    'agent_role': 'Benefits consultant',
                     'agent_api': '/api/chat/benefits',
                     'action_card': self._action_card(
-                        do_now='Уточните временные виды помощи, доступные без полного пакета документов.',
-                        where='Соцслужба или НКО.',
-                        what_to_say='Какая срочная помощь доступна мне на этапе оформления документов?',
-                        bring_with_you='Подтверждение личности/статуса (если есть).',
-                        if_refused='Попросите альтернативные программы или направления в партнерские организации.'
+                        do_now='Ask which temporary support options are available without full documents.',
+                        where='Social service office or NGO.',
+                        what_to_say='What urgent support can I receive while my documents are being processed?',
+                        bring_with_you='Identity/status proof if available.',
+                        if_refused='Ask for alternative programs or partner referrals.'
                     )
                 }
             ]
-            estimated_time = '3-14 дней на первичное оформление'
+            estimated_time = '3-14 days for initial processing'
         elif problem == 'benefits':
             steps = [
                 {
-                    'tab': 'Соцподдержка',
+                    'tab': 'Benefits',
                     'number': 1,
-                    'title': 'Проверьте доступные выплаты и льготы',
-                    'description': 'Сфокусируйтесь на реальных программах под вашу ситуацию.',
+                    'title': 'Check available benefits and support',
+                    'description': 'Focus on realistic programs for your exact situation.',
                     'agent_name': 'BenefitsAgent',
-                    'agent_role': '💶 Консультант по соцподдержке',
+                    'agent_role': 'Benefits consultant',
                     'agent_api': '/api/chat/benefits',
                     'action_card': self._action_card(
-                        do_now='Составьте короткий профиль дохода, состава семьи и текущих расходов.',
-                        where='Соцслужба/центр помощи/бесплатная консультация.',
-                        what_to_say='Хочу проверить, на какие выплаты и помощь я могу претендовать.',
-                        bring_with_you='ID, документы семьи, подтверждение доходов (если есть).',
-                        if_refused='Попросите основания отказа и список альтернативных программ.'
+                        do_now='Prepare a short profile: income, household, current expenses.',
+                        where='Social office, assistance center, or free consultation.',
+                        what_to_say='I want to check which benefits and support I may qualify for.',
+                        bring_with_you='ID, family documents, income proof (if available).',
+                        if_refused='Ask for refusal grounds and alternative programs.'
                     )
                 },
                 {
-                    'tab': 'Документы',
+                    'tab': 'Documents',
                     'number': 2,
-                    'title': 'Закройте недостающие документы для заявки',
-                    'description': 'Подготовьте недостающие бумаги, чтобы не потерять срок подачи.',
+                    'title': 'Close missing documents for application',
+                    'description': 'Prepare missing papers to avoid losing the application timeline.',
                     'agent_name': 'DocumentsAgent',
-                    'agent_role': '🪪 Консультант по документам',
+                    'agent_role': 'Documents consultant',
                     'agent_api': '/api/chat/documents',
                     'action_card': self._action_card(
-                        do_now='Сверьте чек-лист заявки и отметьте, чего не хватает.',
-                        where='Офис подачи заявок/НКО.',
-                        what_to_say='Мне нужен точный список документов для завершения заявки.',
-                        bring_with_you='Черновик заявки, копии имеющихся документов.',
-                        if_refused='Попросите принять частичный пакет и назначить дату донесения.'
+                        do_now='Review application checklist and mark missing items.',
+                        where='Application office or NGO.',
+                        what_to_say='I need the exact document list to complete my application.',
+                        bring_with_you='Draft application and copies of available documents.',
+                        if_refused='Ask them to accept a partial pack and schedule completion date.'
                     )
                 }
             ]
-            estimated_time = '2-10 дней до подачи заявки'
+            estimated_time = '2-10 days to submit application'
         else:
             steps = [
                 {
-                    'tab': 'Словацкий язык' if language_level in ['none', 'basic'] else 'Резюме',
+                    'tab': 'Slovak language' if language_level in ['none', 'basic'] else 'Resume',
                     'number': 1,
-                    'title': 'Подготовьте базу для трудоустройства',
-                    'description': 'При слабом языке начните с мини-уроков, иначе переходите к резюме.',
+                    'title': 'Prepare the employment foundation',
+                    'description': 'If language is weak, start with micro-lessons; otherwise move to resume.',
                     'agent_name': 'LanguageAgent' if language_level in ['none', 'basic'] else 'ResumeAgent',
-                    'agent_role': '🎓 Учитель словацкого языка' if language_level in ['none', 'basic'] else '👨‍💼 Консультант по резюме',
+                    'agent_role': 'Slovak language teacher' if language_level in ['none', 'basic'] else 'Resume consultant',
                     'agent_api': '/api/chat/language' if language_level in ['none', 'basic'] else '/api/chat/resume',
                     'action_card': self._action_card(
-                        do_now='Определите 1 ближайшую цель: язык (20 минут) или черновик резюме (10 строк).',
-                        where='Соответствующая вкладка StepToLife.',
-                        what_to_say='Хочу быстро подготовиться к трудоустройству по шагам.',
-                        bring_with_you='Список навыков, опыт, уровень языка.',
-                        if_refused='Спросите упрощенный путь из 2-3 шагов.'
+                        do_now='Pick one immediate goal: language (20 min) or resume draft (10 lines).',
+                        where='Relevant StepToLife tab.',
+                        what_to_say='I want quick step-by-step preparation for employment.',
+                        bring_with_you='Skills list, experience, and language level.',
+                        if_refused='Ask for a simplified 2-3 step path.'
                     )
                 },
                 {
-                    'tab': 'Работа',
+                    'tab': 'Jobs',
                     'number': 2,
-                    'title': 'Запустите целевой поиск работы',
-                    'description': 'Ищите вакансии под ваш текущий профиль и ограничения.',
+                    'title': 'Start targeted job search',
+                    'description': 'Search for roles that fit your current profile and constraints.',
                     'agent_name': 'JobAgent',
-                    'agent_role': '🔍 Консультант по трудоустройству',
+                    'agent_role': 'Job consultant',
                     'agent_api': '/api/chat/jobs',
                     'action_card': self._action_card(
-                        do_now='Выберите 2 роли и 1 город/регион для старта поиска.',
-                        where='Вкладка "Работа" в StepToLife.',
-                        what_to_say='Подберите мне 3 реалистичные вакансии и план откликов на неделю.',
-                        bring_with_you='Черновик резюме, предпочтения по графику и локации.',
-                        if_refused='Сузьте фильтр и запросите альтернативные стартовые позиции.'
+                        do_now='Select 2 roles and 1 city/region to start searching.',
+                        where='Jobs tab in StepToLife.',
+                        what_to_say='Find 3 realistic vacancies for me and a one-week application plan.',
+                        bring_with_you='Resume draft, schedule preferences, and location preferences.',
+                        if_refused='Narrow filters and ask for alternative entry-level positions.'
                     )
                 }
             ]
-            estimated_time = '3-14 дней до первых откликов'
+            estimated_time = '3-14 days to first applications'
 
         plan = {
-            'title': '🧭 Адаптивный план действий',
-            'intro': 'План построен под вашу ситуацию: тип проблемы + доступные ресурсы + срочность.',
+            'title': 'Adaptive Action Plan',
+            'intro': 'This plan is built for your situation: problem type + available resources + urgency.',
             'primary_agent': primary_agent,
             'steps': steps,
             'estimated_time': estimated_time,
@@ -414,10 +419,10 @@ class InitialAgent(BaseAgent):
         }
 
         if urgency == 'high':
-            plan['special_advice'] = '✓ Высокая срочность: начните с экстренной помощи и одного безопасного шага прямо сейчас.'
+            plan['special_advice'] = 'High urgency: start with emergency support and one safe action right now.'
         elif has_documents == 'no':
-            plan['special_advice'] = '✓ Нет документов: параллельно решайте базовую безопасность и первичную легализацию через DocumentsAgent.'
+            plan['special_advice'] = 'No documents: work on immediate safety and initial legalization in parallel with DocumentsAgent.'
         elif has_address == 'no':
-            plan['special_advice'] = '✓ Нет стабильного адреса: сначала временное размещение, затем долгосрочное решение.'
+            plan['special_advice'] = 'No stable address: first secure temporary accommodation, then move to long-term options.'
 
         return plan

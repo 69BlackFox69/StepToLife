@@ -3,54 +3,54 @@ from agents.base_agent import BaseAgent
 
 
 class CareerAgent(BaseAgent):
-    """Агент, который проводит короткое интервью, формирует план и подтверждает старт"""
+    """Agent that runs a short interview, creates a plan, and confirms start"""
 
     def __init__(self):
-        system_prompt = """Ты - AI-агент StepToLife для поиска работы.
+        system_prompt = """You are the StepToLife AI career assistant.
 
-Твоя цель:
-- после короткого интервью составить персональный план поиска работы;
-- отвечать коротко, ясно и по делу;
-- после подтверждения плана сказать, что можно переходить к созданию резюме.
+    Your goals:
+    - after a short interview, create a personalized job-search plan;
+    - reply briefly, clearly, and practically;
+    - after plan confirmation, say that the user can move to resume creation.
 
-Когда интервью завершено, составь план на русском языке, 3-5 шагов, с учетом ответов пользователя.
-План должен быть конкретным, поддерживающим и без канцелярита.
-"""
+    When the interview is finished, create the plan in English with 3-5 steps based on user answers.
+    The plan should be concrete, supportive, and free of bureaucracy.
+    """
         super().__init__(system_prompt)
 
     def get_questions(self):
         return [
             {
                 'field': 'language',
-                'question': 'Первый вопрос: вы знаете словацкий язык?'
+                'question': 'First question: do you speak Slovak?'
             },
             {
                 'field': 'documents',
-                'question': 'У вас есть документы?'
+                'question': 'Do you have your documents?'
             },
             {
                 'field': 'residence',
-                'question': 'У вас есть место проживания?'
+                'question': 'Do you currently have a place to live?'
             },
             {
                 'field': 'work_permit',
-                'question': 'У вас есть разрешение на работу?'
+                'question': 'Do you have a work permit?'
             },
             {
                 'field': 'concentration',
-                'question': 'Блок про концентрацию: вам сложно долго концентрироваться или вам удобнее, когда информация короткая?'
+                'question': 'Concentration: is it hard for you to focus for a long time, or do short pieces of information work better?'
             },
             {
                 'field': 'environment',
-                'question': 'Блок про окружающую среду: вам сложно в новых местах, важно понимать, что будет дальше, или некомфортно в людных местах?'
+                'question': 'Environment: are new places difficult, is predictability important for you, or are crowded places uncomfortable?'
             },
             {
                 'field': 'communication',
-                'question': 'Блок про общение: вам сложно начать разговор, вы боитесь сказать что-то неправильно или вам помогают готовые фразы?'
+                'question': 'Communication: is it hard to start a conversation, are you afraid to say something wrong, or do prepared phrases help?'
             },
             {
                 'field': 'stress',
-                'question': 'Блок про стресс: в стрессовой ситуации вы теряетесь, вам нужно больше времени на решения или вы можете остановиться и не продолжить?'
+                'question': 'Stress: in stressful situations do you freeze, need more time for decisions, or stop and struggle to continue?'
             },
         ]
 
@@ -61,6 +61,7 @@ class CareerAgent(BaseAgent):
         normalized = self._normalize(text)
         yes_tokens = [
             'да', 'есть', 'знаю', 'имею', 'конечно', 'ok', 'okay', 'ок', 'yes', 'yep',
+            'yeah', 'yup', 'sure', 'of course', 'i do', 'have', 'can',
             'da', 'дa', 'ð´ð°'
         ]
         if normalized in {'y', 'д', 'ага', 'угу', 'ye', 'ys'}:
@@ -72,7 +73,8 @@ class CareerAgent(BaseAgent):
     def _is_no(self, text):
         normalized = self._normalize(text)
         no_tokens = [
-            'нет', 'не имею', 'не знаю', 'no', 'nope', 'нету', 'неа', 'net', 'ð½ðµñ‚'
+            'нет', 'не имею', 'не знаю', 'no', 'nope', 'нету', 'неа', 'net', 'ð½ðµñ‚',
+            'i do not', "don't", 'not really', 'none', 'nope'
         ]
         if normalized in {'n', 'н', 'не'}:
             return True
@@ -88,16 +90,16 @@ class CareerAgent(BaseAgent):
         discomforts = []
         mapping = {
             'concentration-long': ['долго концентр', 'концентрир', 'тяжело концентр', 'сконцентриров'],
-            'concentration-short': ['коротк', 'кратк', 'короткая информация', 'информация короткая'],
+            'concentration-short': ['коротк', 'кратк', 'короткая информация', 'информация короткая', 'short info', 'short information', 'brief'],
             'environment-new-places': ['новых местах', 'новые места', 'незнаком'],
-            'environment-predictability': ['что будет дальше', 'понимать, что будет', 'предсказуем'],
+            'environment-predictability': ['что будет дальше', 'понимать, что будет', 'предсказуем', 'predictable', 'predictability', 'what comes next'],
             'environment-crowds': ['людных', 'много людей', 'толп', 'crowd'],
-            'communication-start': ['начать разговор', 'сложно начать', 'как начать'],
-            'communication-fear': ['боюсь', 'неправильно', 'ошиб', 'страшно сказать'],
-            'communication-phrases': ['готовые фразы', 'фразы', 'шаблоны фраз'],
-            'stress-lose': ['теряюсь', 'стресс', 'панику', 'теряюсь'],
-            'stress-time': ['больше времени', 'нужно время', 'медленно'],
-            'stress-stop': ['остановиться', 'не продолжить', 'не смогу продолжить'],
+            'communication-start': ['начать разговор', 'сложно начать', 'как начать', 'start conversation', 'start talking'],
+            'communication-fear': ['боюсь', 'неправильно', 'ошиб', 'страшно сказать', 'afraid', 'wrong', 'mistake'],
+            'communication-phrases': ['готовые фразы', 'фразы', 'шаблоны фраз', 'prepared phrases', 'ready phrases'],
+            'stress-lose': ['теряюсь', 'стресс', 'панику', 'теряюсь', 'freeze', 'panic', 'stressed'],
+            'stress-time': ['больше времени', 'нужно время', 'медленно', 'more time', 'slow decision'],
+            'stress-stop': ['остановиться', 'не продолжить', 'не смогу продолжить', 'stop', 'cannot continue'],
         }
 
         for key, keywords in mapping.items():
@@ -107,15 +109,15 @@ class CareerAgent(BaseAgent):
 
     def _build_plan_prompt(self, characteristics):
         return (
-            "Составь персональный план поиска работы на русском языке. "
-            "Нужно 3-5 коротких шагов. "
-            "Учитывай профиль пользователя: "
+            "Create a personalized job-search plan in English. "
+            "Use 3-5 short steps. "
+            "Use this user profile: "
             f"language={characteristics.get('language', 'unknown')}; "
             f"documents={characteristics.get('documents', 'unknown')}; "
             f"residence={characteristics.get('residence', 'unknown')}; "
             f"work_permit={characteristics.get('work_permit', 'unknown')}; "
             f"discomforts={characteristics.get('discomforts', [])}. "
-            "В конце спроси, подходит ли такой план."
+            "At the end, ask whether this plan works for the user."
         )
 
     def _generate_plan(self, characteristics):
@@ -149,7 +151,7 @@ class CareerAgent(BaseAgent):
             first_question = questions[0]['question']
             return {
                 'success': True,
-                'message': f'Давайте коротко уточним вашу ситуацию. {first_question}',
+                'message': f"Let's quickly clarify your situation. {first_question}",
                 'phase': 'interview',
                 'question_index': 1,
                 'answers': [],
@@ -161,7 +163,7 @@ class CareerAgent(BaseAgent):
             if self._is_yes(normalized):
                 return {
                     'success': True,
-                    'message': 'Отличный выбор. Перевожу вас на короткий языковой курс.',
+                    'message': 'Great choice. Moving you to a short language course.',
                     'phase': 'redirect_language',
                     'question_index': question_index,
                     'answers': answers,
@@ -172,7 +174,7 @@ class CareerAgent(BaseAgent):
                 next_question = questions[1]['question']
                 return {
                     'success': True,
-                    'message': f'Хорошо, продолжаем интервью. {next_question}',
+                    'message': f'Okay, continuing the interview. {next_question}',
                     'phase': 'interview',
                     'question_index': 2,
                     'answers': answers,
@@ -181,7 +183,7 @@ class CareerAgent(BaseAgent):
 
             return {
                 'success': True,
-                'message': 'Напишите, пожалуйста, да или нет: хотите пройти короткий курс словацкого сейчас?',
+                'message': 'Please answer yes or no: do you want to take a short Slovak course now?',
                 'phase': 'language_offer',
                 'question_index': question_index,
                 'answers': answers,
@@ -196,30 +198,30 @@ class CareerAgent(BaseAgent):
             if current_field in {'language', 'documents', 'residence', 'work_permit'}:
                 characteristics[current_field] = 'yes' if self._is_yes(answer_text) else 'no' if self._is_no(answer_text) else 'unknown'
             elif current_field == 'concentration':
-                if 'корот' in answer_text.lower() or 'кратк' in answer_text.lower():
+                if 'корот' in answer_text.lower() or 'кратк' in answer_text.lower() or 'short' in answer_text.lower() or 'brief' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['concentration-short']))
-                if 'долго' in answer_text.lower() or 'концентр' in answer_text.lower():
+                if 'долго' in answer_text.lower() or 'концентр' in answer_text.lower() or 'long' in answer_text.lower() or 'focus' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['concentration-long']))
             elif current_field == 'environment':
-                if 'нов' in answer_text.lower() or 'незнаком' in answer_text.lower():
+                if 'нов' in answer_text.lower() or 'незнаком' in answer_text.lower() or 'new place' in answer_text.lower() or 'unfamiliar' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['environment-new-places']))
-                if 'дальше' in answer_text.lower() or 'понимать' in answer_text.lower() or 'предсказуем' in answer_text.lower():
+                if 'дальше' in answer_text.lower() or 'понимать' in answer_text.lower() or 'предсказуем' in answer_text.lower() or 'predict' in answer_text.lower() or 'what next' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['environment-predictability']))
-                if 'людн' in answer_text.lower() or 'много людей' in answer_text.lower() or 'толп' in answer_text.lower():
+                if 'людн' in answer_text.lower() or 'много людей' in answer_text.lower() or 'толп' in answer_text.lower() or 'crowd' in answer_text.lower() or 'many people' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['environment-crowds']))
             elif current_field == 'communication':
-                if 'начать' in answer_text.lower() or 'разговор' in answer_text.lower():
+                if 'начать' in answer_text.lower() or 'разговор' in answer_text.lower() or 'start' in answer_text.lower() or 'conversation' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['communication-start']))
-                if 'боюсь' in answer_text.lower() or 'неправиль' in answer_text.lower() or 'ошиб' in answer_text.lower():
+                if 'боюсь' in answer_text.lower() or 'неправиль' in answer_text.lower() or 'ошиб' in answer_text.lower() or 'afraid' in answer_text.lower() or 'wrong' in answer_text.lower() or 'mistake' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['communication-fear']))
-                if 'фраз' in answer_text.lower() or 'готов' in answer_text.lower():
+                if 'фраз' in answer_text.lower() or 'готов' in answer_text.lower() or 'phrase' in answer_text.lower() or 'template' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['communication-phrases']))
             elif current_field == 'stress':
-                if 'теря' in answer_text.lower() or 'стресс' in answer_text.lower() or 'панику' in answer_text.lower():
+                if 'теря' in answer_text.lower() or 'стресс' in answer_text.lower() or 'панику' in answer_text.lower() or 'freeze' in answer_text.lower() or 'panic' in answer_text.lower() or 'stress' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['stress-lose']))
-                if 'время' in answer_text.lower() or 'медлен' in answer_text.lower():
+                if 'время' in answer_text.lower() or 'медлен' in answer_text.lower() or 'time' in answer_text.lower() or 'slow' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['stress-time']))
-                if 'останов' in answer_text.lower() or 'не продолж' in answer_text.lower():
+                if 'останов' in answer_text.lower() or 'не продолж' in answer_text.lower() or 'stop' in answer_text.lower() or 'continue' in answer_text.lower():
                     characteristics['discomforts'] = list(dict.fromkeys(characteristics.get('discomforts', []) + ['stress-stop']))
 
             answers.append({
@@ -230,7 +232,7 @@ class CareerAgent(BaseAgent):
             if current_field == 'language' and characteristics.get('language') == 'no':
                 return {
                     'success': True,
-                    'message': 'Понял. Хотите перед продолжением пройти короткий обучающий курс словацкого?',
+                    'message': 'Understood. Before we continue, do you want to take a short Slovak learning course?',
                     'phase': 'language_offer',
                     'question_index': question_index,
                     'answers': answers,
@@ -260,21 +262,21 @@ class CareerAgent(BaseAgent):
 
         if phase == 'plan':
             normalized = self._normalize(user_message)
-            confirm_phrases = {'да', 'подходит', 'нравится', 'согласен', 'согласна', 'ok', 'ок', 'поехали', 'начинаем'}
-            if normalized in confirm_phrases or any(phrase in normalized for phrase in ['да, план', 'план нравится', 'подходит', 'все ок']):
+            confirm_phrases = {'да', 'подходит', 'нравится', 'согласен', 'согласна', 'ok', 'ок', 'поехали', 'начинаем', 'yes', 'works', 'looks good', 'approve', 'approved', 'let us start', "let's start"}
+            if normalized in confirm_phrases or any(phrase in normalized for phrase in ['да, план', 'план нравится', 'подходит', 'все ок', 'plan works', 'looks good', 'sounds good', 'yes, plan']):
                 return {
                     'success': True,
-                    'message': 'Отлично, план подтвержден. Сейчас переведу вас к созданию резюме.',
+                    'message': 'Great, the plan is confirmed. Now I will move you to resume creation.',
                     'phase': 'approved',
                     'question_index': question_index,
                     'answers': answers,
                     'characteristics': characteristics,
                 }
 
-            if 'проще' in normalized or 'короче' in normalized:
+            if 'проще' in normalized or 'короче' in normalized or 'simpler' in normalized or 'shorter' in normalized:
                 simple_prompt = (
-                    "Сделай этот план еще короче и проще. "
-                    f"Профиль: language={characteristics.get('language', 'unknown')}; "
+                    "Make this plan shorter and simpler. "
+                    f"Profile: language={characteristics.get('language', 'unknown')}; "
                     f"documents={characteristics.get('documents', 'unknown')}; "
                     f"residence={characteristics.get('residence', 'unknown')}; "
                     f"work_permit={characteristics.get('work_permit', 'unknown')}; "
@@ -302,7 +304,7 @@ class CareerAgent(BaseAgent):
 
             return {
                 'success': True,
-                'message': 'Если план подходит, напишите: да, план нравится. Если хотите, я могу сделать его короче.',
+                'message': 'If the plan works, write: yes, I approve the plan. If you want, I can make it shorter.',
                 'phase': 'plan',
                 'question_index': question_index,
                 'answers': answers,
@@ -311,7 +313,7 @@ class CareerAgent(BaseAgent):
 
         return {
             'success': False,
-            'message': 'Неизвестное состояние чата',
+            'message': 'Unknown chat state',
             'phase': phase,
             'question_index': question_index,
             'answers': answers,

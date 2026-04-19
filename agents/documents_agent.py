@@ -8,29 +8,29 @@ from services import (
 
 
 class DocumentsAgent(BaseAgent):
-    """Специализированный агент по документам и легализации"""
+    """Specialized agent for documents and legalization"""
 
     def __init__(self):
-        system_prompt = """Ты - консультант по документам и легализации в Словакии на платформе StepToLife.
+        system_prompt = """You are a documents and legalization consultant in Slovakia on the StepToLife platform.
 
-Твоя задача:
-- помочь пользователю понять, какие документы нужны в его ситуации,
-- разложить процесс на простые шаги,
-- дать аккуратные формулировки для общения с учреждениями.
+    Your task:
+    - help the user understand which documents are needed in their situation,
+    - break the process into simple steps,
+    - provide careful wording for communication with institutions.
 
-Правила:
-- не обещай юридический результат,
-- если не хватает данных - прямо скажи, что нужно уточнить,
-- объясняй простыми словами без сложных терминов.
+    Rules:
+    - do not promise legal outcomes,
+    - if data is missing, clearly state what needs clarification,
+    - explain in plain language without complex legal terms.
 
-Формат ответов:
-1) что важно проверить,
-2) что сделать сегодня,
-3) какие документы взять,
-4) что сказать в учреждении.
+    Response format:
+    1) what to check first,
+    2) what to do today,
+    3) which documents to bring,
+    4) what to say at the institution.
 
-Стиль: уважительный, структурный, поддерживающий.
-Язык: русский."""
+    Style: respectful, structured, supportive.
+    Language: English."""
         super().__init__(system_prompt)
         self.resolver = ResourceResolver()
 
@@ -66,8 +66,8 @@ class DocumentsAgent(BaseAgent):
         grounded_message = (
             f"{user_message}\n\n"
             f"{verified_context}\n\n"
-            "STRICT MODE: Используй только названия, адреса и контакты из VERIFIED SERVICES. "
-            "Не придумывай новые организации, телефоны или адреса."
+            "STRICT MODE: Use only names, addresses, and contacts from VERIFIED SERVICES. "
+            "Do not invent new organizations, phone numbers, or addresses."
         )
 
         response = super().process(grounded_message, conversation_history)

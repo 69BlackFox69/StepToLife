@@ -2,54 +2,53 @@ import json
 from agents.base_agent import BaseAgent
 
 class JobAgent(BaseAgent):
-    """Четвёртый агент - поиск и предложение доступных работ в Словакии"""
+    """Fourth agent: search and suggest suitable jobs in Slovakia"""
     
     def __init__(self):
-        system_prompt = """Ты - опытный консультант по трудоустройству в Словакии на платформе StepToLife.
+        system_prompt = """You are an experienced employment consultant in Slovakia on the StepToLife platform.
 
-Твоя цель: помочь пользователю найти подходящую работу и подготовиться к трудоустройству.
+    Your goal: help the user find suitable jobs and prepare for employment.
 
-Твой подход:
-1. Анализируй резюме пользователя если оно есть
-2. Понимай его уровень квалификации и опыта
-3. Предлагай 2-4 подходящие вакансии или направления поиска
-4. Объясняй почему эти позиции подходят именно ему
-5. Давай советы по:
-   - Подготовке к интервью
-   - Как выделиться среди других кандидатов
-   - Переговорам о зарплате
-   - Адаптации навыков под словацкий рынок
+    Approach:
+    1. Analyze the user's resume when available
+    2. Understand qualification and experience level
+    3. Suggest 2-4 suitable vacancies or search directions
+    4. Explain why these positions fit this person
+    5. Give practical advice on:
+       - Interview preparation
+       - Standing out among other candidates
+       - Salary negotiation
+       - Adapting skills to the Slovak market
 
-Контекст словацкого рынка:
-- Популярные сектора: IT (ESET, Huawei), здравоохранение, туризм, производство, услуги
-- Требования: часто нужен словацкий язык, релевантный опыт, мягкие навыки
-- Зарплаты: €800-€1500 (начальные) до €3000+ (опыт)
-- Работодатели: ESET, Tatra banka, IBM, Accenture, Deutsche Telekom Slovakia
+    Slovak market context:
+    - Common sectors: IT, healthcare, tourism, manufacturing, services
+    - Typical requirements: Slovak language, relevant experience, soft skills
+    - Salary ranges vary by level and role
 
-ВАЖНО - помни о маргинализированных группах:
-- Мигранты/беженцы: помни о языковых барьерах, документах, культурных отличиях
-- Безработные долгое время: помогай увидеть сильные стороны, пробелы в занятости
-- Люди с инвалидностью: ориентируй на доступные позиции, компании с инклюзивной политикой
-- Люди с криминальным прошлым: помогай найти компании дающие второй шанс
+    Important: many users belong to vulnerable groups.
+    - Migrants/refugees: consider language barriers, documents, cultural differences
+    - Long-term unemployed: highlight strengths and explain employment gaps constructively
+    - People with disabilities: suggest accessible roles and inclusive employers
+    - People with criminal records: support realistic second-chance pathways
 
-Стиль: 
-- Будь практичным и поддерживающим
-- Не переусложняй - давай конкретные советы
-- Показывай что возможно найти работу несмотря на препятствия
-- Слушай что нужно лично этому человеку
+    Style:
+    - Practical and supportive
+    - Specific and not overcomplicated
+    - Show that progress is possible despite barriers
+    - Listen to personal constraints and goals
 
-Язык: русский."""
+    Language: English."""
         super().__init__(system_prompt)
     
     def process(self, user_message, conversation_history, resume_data=None):
-        """Обработать сообщение и предложить работы"""
+        """Process message and suggest jobs"""
         
-        # Готовим контекст с информацией о резюме
+        # Build context with resume information
         context_message = user_message
         
         if resume_data:
             resume_summary = self._create_resume_summary(resume_data)
-            context_message = f"[Информация о резюме пользователя:\n{resume_summary}]\n\nСообщение: {user_message}"
+            context_message = f"[User resume information:\n{resume_summary}]\n\nMessage: {user_message}"
         
         response = super().process(context_message, conversation_history)
         
@@ -58,7 +57,7 @@ class JobAgent(BaseAgent):
         
         message = response['message']
         
-        # Пытаемся извлечь информацию о предложенных вакансиях
+        # Try to extract suggested roles
         job_suggestions = self._extract_job_suggestions(message)
         
         result = {
@@ -72,26 +71,26 @@ class JobAgent(BaseAgent):
         return result
     
     def _create_resume_summary(self, resume_data):
-        """Создать краткое резюме информации для контекста"""
+        """Create short resume summary for model context"""
         summary = []
         
         if 'name' in resume_data:
-            summary.append(f"Имя: {resume_data['name']}")
+            summary.append(f"Name: {resume_data['name']}")
         
         if 'skills' in resume_data:
             skills = resume_data['skills']
             if isinstance(skills, list):
-                summary.append(f"Навыки: {', '.join(skills)}")
+                summary.append(f"Skills: {', '.join(skills)}")
         
         if 'experience' in resume_data:
-            summary.append("Опыт работы:")
+            summary.append("Work experience:")
             experiences = resume_data['experience']
             if isinstance(experiences, list):
                 for exp in experiences:
                     summary.append(f"  - {exp.get('position', '')}: {exp.get('duration', '')}")
         
         if 'languages' in resume_data:
-            summary.append("Языки:")
+            summary.append("Languages:")
             languages = resume_data['languages']
             if isinstance(languages, dict):
                 for lang, level in languages.items():
@@ -100,24 +99,31 @@ class JobAgent(BaseAgent):
         return '\n'.join(summary)
     
     def _extract_job_suggestions(self, message):
-        """Попытаться извлечь предложенные вакансии"""
-        # Это упрощённая версия - в реальном приложении нужна более умная парсинг
+        """Try to extract suggested vacancies"""
+        # Simplified extractor; production version should use structured output.
         
         job_suggestions = []
         
-        # Ищем упоминания должностей
+        # Look for common role mentions in both Russian and English.
         job_keywords = {
             'разработчик': 'Developer',
+            'developer': 'Developer',
             'медсестра': 'Nurse',
+            'nurse': 'Nurse',
             'учитель': 'Teacher',
+            'teacher': 'Teacher',
             'менеджер': 'Manager',
+            'manager': 'Manager',
             'консультант': 'Consultant',
+            'consultant': 'Consultant',
             'аналитик': 'Analyst',
-            'инженер': 'Engineer'
+            'analyst': 'Analyst',
+            'инженер': 'Engineer',
+            'engineer': 'Engineer'
         }
         
         for keyword, job_title in job_keywords.items():
             if keyword in message.lower():
                 job_suggestions.append(job_title)
         
-        return list(set(job_suggestions))  # Удаляем дубликаты
+        return list(set(job_suggestions))

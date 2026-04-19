@@ -96,14 +96,14 @@ def format_verified_services_for_prompt(services):
 
 def strict_fallback_message(problem_domain, city):
     base = (
-        "Нужно уточнить: в проверенной локальной базе сейчас нет точного контакта "
-        f"по направлению '{problem_domain}' для города {city}. "
-        "Я не буду придумывать адреса или телефоны."
+        "Need clarification: the verified local database currently has no exact contact "
+        f"for domain '{problem_domain}' in {city}. "
+        "I will not invent addresses or phone numbers."
     )
 
     next_step = (
-        "Следующий шаг: уточните район/тип услуги и повторите запрос, "
-        "или обратитесь в ближайший социальный центр города."
+        "Next step: specify district/service type and repeat your request, "
+        "or contact the nearest city social support center."
     )
 
     return f"{base}\n\n{next_step}"

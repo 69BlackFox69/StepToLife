@@ -9,39 +9,39 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from datetime import datetime
 
 class ResumeAgent(BaseAgent):
-    """Третий агент - создание резюме в интерактивном формате"""
+    """Third agent: interactive resume creation"""
     
     def __init__(self):
-        system_prompt = """Ты - опытный консультант по составлению профессионального резюме на платформе StepToLife.
+        system_prompt = """You are an experienced professional resume consultant on the StepToLife platform.
 
-Твоя цель: помочь пользователю создать сильное резюме для словацкого рынка труда.
+Your goal: help the user create a strong resume for the Slovak job market.
 
-Подход:
-- Задавай вопросы естественно, один за другим, не спешком
-- Слушай ответы внимательно и задавай уточняющие вопросы если нужно
-- Помогай структурировать информацию о:
-  * Личные данные (имя, контакты - email, телефон)
-  * Профессиональный опыт (должности, компании, достижения)
-  * Образование (специальность, школа, годы)
-  * Ключевые навыки и знания
-  * Языки (какие языки и уровень)
-  * Сертификаты, награды, дополнительные достижения
-- Давай советы по оформлению для словацкого рынка
-- Предлагай улучшения и переформулировки
+Approach:
+- Ask questions naturally, one by one, without rushing
+- Listen carefully and ask clarifying questions when needed
+- Help structure information about:
+    * Personal details (name, contacts: email, phone)
+    * Professional experience (roles, companies, achievements)
+    * Education (specialization, school, years)
+    * Key skills and knowledge
+    * Languages (which languages and level)
+    * Certificates, awards, additional achievements
+- Provide formatting advice for the Slovak market
+- Suggest improvements and rephrasing
 
-Когда соберёшь достаточно информации:
-- Скажи что-то вроде "Кажется, у нас достаточно информации для резюме" или "Думаю, мы готовы создать ваше резюме"
-- Предложи скачать PDF версию
-- Спроси нужны ли какие-то изменения
+When enough information is collected:
+- Say something like "We seem to have enough information for the resume"
+- Offer PDF download
+- Ask whether any changes are needed
 
-Важно: Помни, что пользователь может быть из маргинализированной группы, поэтому будь особенно поддерживающим и позитивным. Помоги ему увидеть его сильные стороны.
+Important: the user may belong to a vulnerable group, so stay especially supportive and positive. Help them see their strengths.
 
-Язык: русский."""
+Language: English."""
         super().__init__(system_prompt)
         self.resume_data = {}
     
     def process(self, user_message, conversation_history):
-        """Обработать сообщение и собрать данные для резюме"""
+        """Process message and collect resume data"""
         
         response = super().process(user_message, conversation_history)
         
@@ -50,7 +50,7 @@ class ResumeAgent(BaseAgent):
         
         message = response['message']
         
-        # Проверяем, готово ли резюме (более гибкие условия)
+        # Check whether resume is ready (flexible conditions)
         ready_keywords = [
             'достаточно информации',
             'готовы создать',
@@ -59,7 +59,13 @@ class ResumeAgent(BaseAgent):
             'скачать резюме',
             'готово',
             'готов ваше резюме',
-            'pdf готов'
+            'pdf готов',
+            'enough information',
+            'ready to create',
+            'download pdf',
+            'download resume',
+            'resume is ready',
+            'pdf is ready'
         ]
         
         resume_ready = any(keyword in message.lower() for keyword in ready_keywords)
@@ -70,7 +76,7 @@ class ResumeAgent(BaseAgent):
             'resume_ready': resume_ready
         }
         
-        # Пытаемся извлечь информацию из сообщений пользователя
+        # Try to extract data from user messages
         self._extract_resume_data(user_message)
         
         if self.resume_data:
@@ -79,33 +85,32 @@ class ResumeAgent(BaseAgent):
         return result
     
     def _extract_resume_data(self, user_message):
-        """Пытаемся извлечь структурированные данные из сообщения"""
-        # Это упрощённая версия - в реальном приложении нужен парсер посложнее
-        # или явное запрашивание структурированных данных
+        """Try to extract structured data from message"""
+        # Simplified version: production use should rely on explicit structured extraction.
         
         msg_lower = user_message.lower()
         
-        # Извлечение имени (простая эвристика)
+        # Name extraction (simple heuristic)
         if 'зовут' in msg_lower or 'меня' in msg_lower:
-            # Получим имя из истории или явного запроса
+            # Name can be obtained from history or explicit parser.
             pass
         
-        # Здесь могут быть добавлены другие эвристики для извлечения информации
+        # Additional extraction heuristics can be added here.
     
     def generate_pdf(self, resume_data, user_id):
-        """Генерировать PDF файл резюме"""
+        """Generate resume PDF file"""
         
-        # Создаём директорию для PDF если её нет
+        # Create output folder if missing
         os.makedirs('resumes', exist_ok=True)
         
         filename = f'resumes/resume_{user_id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf'
         
-        # Создаём документ
+        # Build PDF document
         doc = SimpleDocTemplate(filename, pagesize=letter,
                                rightMargin=0.5*inch, leftMargin=0.5*inch,
                                topMargin=0.5*inch, bottomMargin=0.5*inch)
         
-        # Стили
+        # Styles
         styles = getSampleStyleSheet()
         title_style = ParagraphStyle(
             'CustomTitle',
@@ -132,14 +137,14 @@ class ResumeAgent(BaseAgent):
             spaceAfter=6
         )
         
-        # Содержимое документа
+        # Document content
         story = []
         
-        # Заголовок
-        name = resume_data.get('name', 'Резюме кандидата')
+        # Title
+        name = resume_data.get('name', 'Candidate Resume')
         story.append(Paragraph(name, title_style))
         
-        # Контакты
+        # Contacts
         contact_info = []
         if 'email' in resume_data:
             contact_info.append(resume_data['email'])
@@ -152,15 +157,15 @@ class ResumeAgent(BaseAgent):
             story.append(Paragraph(' | '.join(contact_info), body_style))
             story.append(Spacer(1, 0.2*inch))
         
-        # Профессиональная цель
+        # Professional objective
         if 'objective' in resume_data:
-            story.append(Paragraph('ПРОФЕССИОНАЛЬНАЯ ЦЕЛЬ', heading_style))
+            story.append(Paragraph('PROFESSIONAL OBJECTIVE', heading_style))
             story.append(Paragraph(resume_data['objective'], body_style))
             story.append(Spacer(1, 0.1*inch))
         
-        # Опыт работы
+        # Work experience
         if 'experience' in resume_data:
-            story.append(Paragraph('ОПЫТ РАБОТЫ', heading_style))
+            story.append(Paragraph('WORK EXPERIENCE', heading_style))
             experiences = resume_data['experience']
             if isinstance(experiences, list):
                 for exp in experiences:
@@ -170,9 +175,9 @@ class ResumeAgent(BaseAgent):
                         story.append(Paragraph(exp['description'], body_style))
                     story.append(Spacer(1, 0.05*inch))
         
-        # Образование
+        # Education
         if 'education' in resume_data:
-            story.append(Paragraph('ОБРАЗОВАНИЕ', heading_style))
+            story.append(Paragraph('EDUCATION', heading_style))
             educations = resume_data['education']
             if isinstance(educations, list):
                 for edu in educations:
@@ -180,9 +185,9 @@ class ResumeAgent(BaseAgent):
                     story.append(Paragraph(f"{edu.get('year', '')}", body_style))
                     story.append(Spacer(1, 0.05*inch))
         
-        # Навыки
+        # Skills
         if 'skills' in resume_data:
-            story.append(Paragraph('НАВЫКИ', heading_style))
+            story.append(Paragraph('SKILLS', heading_style))
             skills = resume_data['skills']
             if isinstance(skills, list):
                 story.append(Paragraph(', '.join(skills), body_style))
@@ -190,9 +195,9 @@ class ResumeAgent(BaseAgent):
                 story.append(Paragraph(str(skills), body_style))
             story.append(Spacer(1, 0.1*inch))
         
-        # Языки
+        # Languages
         if 'languages' in resume_data:
-            story.append(Paragraph('ЯЗЫКИ', heading_style))
+            story.append(Paragraph('LANGUAGES', heading_style))
             languages = resume_data['languages']
             if isinstance(languages, dict):
                 for lang, level in languages.items():
@@ -200,7 +205,7 @@ class ResumeAgent(BaseAgent):
             else:
                 story.append(Paragraph(str(languages), body_style))
         
-        # Построение документа
+        # Build document
         doc.build(story)
         
         return filename
