@@ -309,6 +309,25 @@ async function goToJobsRoute() {
     }
 }
 
+async function goBackToCareerChat() {
+    showScreen('screen-career-chat');
+
+    const careerChat = document.getElementById('career-chat');
+    if (careerChat) {
+        careerChat.innerHTML = '';
+    }
+
+    userState.careerPhase = 'interview';
+    userState.planApproved = false;
+
+    const data = await requestUnifiedCareer('', true);
+    if (data && data.success) {
+        appendPlanChatMessage('assistant', data.message);
+    } else {
+        appendPlanChatMessage('assistant', 'Не удалось перезапустить вопросы. Попробуйте еще раз.');
+    }
+}
+
 async function sendPlanMessage() {
     const input = document.getElementById('career-input');
     if (!input) return;
