@@ -671,6 +671,35 @@ body {
     color: #3d236e;
 }
 
+.container.theme-light .resume-complete-btn {
+    background: #2ecc71;
+    color: #ffffff;
+}
+
+.container.theme-light .resume-complete-btn:hover {
+    background: #27ae60;
+}
+
+.container.theme-warm .resume-complete-btn {
+    background: #e78b3b;
+    color: #ffffff;
+}
+
+.container.theme-warm .resume-complete-btn:hover {
+    background: #cf7427;
+}
+
+.container.theme-contrast .resume-complete-btn {
+    background: #60a5fa;
+    color: #0f172a;
+}
+
+.container.theme-contrast .resume-complete-btn:hover {
+    background: #3b82f6;
+    color: #0b1220;
+    box-shadow: 0 5px 15px rgba(96, 165, 250, 0.45);
+}
+
 /* ===== ВКЛАДКИ ===== */
 
 .tabs-container {
@@ -1007,6 +1036,41 @@ body {
     gap: 10px;
 }
 
+.voice-btn {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    border: 1px solid #d7dff0;
+    border-radius: 10px;
+    background: #f5f0ff;
+    color: #7a57b6;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.voice-btn:hover {
+    background: #eadfff;
+    border-color: #c8b7f0;
+}
+
+.voice-btn.listening {
+    background: #7a57b6;
+    color: #ffffff;
+    border-color: #7a57b6;
+    box-shadow: 0 0 0 4px rgba(122, 87, 182, 0.18);
+}
+
+.container.simple-mode .voice-btn {
+    width: 56px;
+    min-width: 56px;
+    height: 56px;
+    font-size: 24px;
+    border-radius: 12px;
+}
+
 .chat-input {
     flex: 1;
     padding: 12px 15px;
@@ -1132,6 +1196,11 @@ body {
 
     .input-group {
         flex-direction: column;
+    }
+
+    .voice-btn,
+    .send-btn {
+        width: 100%;
     }
 
     .send-btn {

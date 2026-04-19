@@ -15,6 +15,8 @@ let userState = {
 };
 
 let activeSpeechButton = null;
+let activeVoiceRecognition = null;
+let activeVoiceInputId = null;
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -498,6 +500,99 @@ function wireSpeechButtonsForExistingMessages() {
         const originalText = textEl.textContent || '';
         renderMessageContent(messageEl, 'assistant', originalText);
     });
+}
+
+function getVoiceSendHandler(inputId) {
+    const handlers = {
+        'career-input': sendCareerMessage,
+        'language-input': sendLanguageMessage,
+        'resume-input': sendResumeMessage,
+        'initial-input': sendInitialMessage,
+    };
+
+    return handlers[inputId] || null;
+}
+
+function stopVoiceInput() {
+    if (activeVoiceRecognition) {
+        try {
+            activeVoiceRecognition.stop();
+        } catch (e) {
+            // ignore stop errors
+        }
+        activeVoiceRecognition = null;
+    }
+
+    const button = document.querySelector(`.voice-btn[data-listening="true"]`);
+    if (button) {
+        button.classList.remove('listening');
+        button.removeAttribute('data-listening');
+        button.textContent = '🎤';
+    }
+    activeVoiceInputId = null;
+}
+
+function startVoiceInput(inputId) {
+    const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionClass) {
+        alert('Voice input is not supported in this browser.');
+        return;
+    }
+
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const currentButton = document.querySelector(`.voice-btn[onclick*="startVoiceInput('${inputId}')"]`);
+    if (activeVoiceRecognition && activeVoiceInputId === inputId) {
+        stopVoiceInput();
+        return;
+    }
+
+    stopVoiceInput();
+
+    const recognition = new SpeechRecognitionClass();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    activeVoiceRecognition = recognition;
+    activeVoiceInputId = inputId;
+
+    if (currentButton) {
+        currentButton.classList.add('listening');
+        currentButton.setAttribute('data-listening', 'true');
+        currentButton.textContent = '●';
+    }
+
+    recognition.onresult = function(event) {
+        const transcript = Array.from(event.results)
+            .map(result => result[0].transcript)
+            .join(' ')
+            .trim();
+
+        if (transcript) {
+            input.value = transcript;
+        }
+    };
+
+    recognition.onend = function() {
+        const transcript = (input.value || '').trim();
+        stopVoiceInput();
+
+        if (!transcript) return;
+
+        const sendHandler = getVoiceSendHandler(inputId);
+        if (sendHandler) {
+            sendHandler();
+        }
+    };
+
+    recognition.onerror = function() {
+        stopVoiceInput();
+    };
+
+    recognition.start();
 }
 
 function detectSpeechLanguage(text) {

@@ -79,6 +79,7 @@
                     <div class="chat-input-area">
                         <div class="input-group">
                             <input type="text" id="career-input" class="chat-input" placeholder="Type your answer..." />
+                            <button type="button" class="voice-btn" onclick="startVoiceInput('career-input')" aria-label="Use voice input">🎤</button>
                             <button class="send-btn" onclick="sendCareerMessage()">Send</button>
                         </div>
                     </div>
@@ -104,6 +105,7 @@
                     <div class="chat-input-area">
                         <div class="input-group">
                             <input type="text" id="language-input" class="chat-input" placeholder="Type: yes / help me start speaking Slovak" />
+                            <button type="button" class="voice-btn" onclick="startVoiceInput('language-input')" aria-label="Use voice input">🎤</button>
                             <button class="send-btn" onclick="sendLanguageMessage()">Send</button>
                         </div>
                     </div>
@@ -137,10 +139,11 @@
                     <div class="chat-input-area">
                         <div class="input-group">
                             <input type="text" id="resume-input" class="chat-input" placeholder="Enter information..." />
+                            <button type="button" class="voice-btn" onclick="startVoiceInput('resume-input')" aria-label="Use voice input">🎤</button>
                             <button class="send-btn" onclick="sendResumeMessage()">Send</button>
                         </div>
                         <button class="action-btn" onclick="generatePDF()" id="pdf-btn" style="display:none;">📥 Download Resume (PDF)</button>
-                        <button class="action-btn" onclick="stepComplete(1)">✅ Resume completed</button>
+                        <button class="action-btn resume-complete-btn" onclick="stepComplete(1)">✅ Resume completed</button>
                     </div>
                 </div>
             </div>
@@ -235,6 +238,7 @@
                     <div class="chat-input-area">
                         <div class="input-group">
                             <input type="text" id="initial-input" class="chat-input" placeholder="Type a message..." />
+                            <button type="button" class="voice-btn" onclick="startVoiceInput('initial-input')" aria-label="Use voice input">🎤</button>
                             <button class="send-btn" onclick="sendInitialMessage()">Send</button>
                         </div>
                     </div>
