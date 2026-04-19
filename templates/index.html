@@ -86,13 +86,37 @@
             </div>
         </div>
 
+        <!-- ЭКРАН 4: Изучение языка (отдельно от вкладок маршрута) -->
+        <div class="screen" id="screen-language-chat" style="display:none;">
+            <div class="screen-content">
+                <h2>Изучение языка</h2>
+                <p class="screen-subtitle">Короткий живой чат с первым базовым уроком</p>
+
+                <button class="action-btn secondary" onclick="goBackToCareerChat()">← Вернуться к вопросам</button>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="language-chat">
+                        <div class="message assistant">
+                            <p>Привет, я помогу тебе выучить словацкий язык, готов начать?</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <input type="text" id="language-input" class="chat-input" placeholder="Напишите: да / помоги мне начать говорить по словацки" />
+                            <button class="send-btn" onclick="sendLanguageMessage()">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ВКЛАДКИ ДЛЯ ШАГОВ МАРШРУТА -->
         <div class="tabs-container" id="tabs-container" style="display:none;">
             <div class="tabs">
                 <button class="tab-btn active" data-tab="resume-step">1. Резюме</button>
-                <button class="tab-btn" data-tab="language-step">2. Фразы</button>
-                <button class="tab-btn" data-tab="jobs-step">3. Поиск</button>
-                <button class="tab-btn" data-tab="interview-step">4. Встреча</button>
+                <button class="tab-btn" data-tab="jobs-step">2. Поиск</button>
+                <button class="tab-btn" data-tab="interview-step">3. Встреча</button>
                 <button class="tab-btn" data-tab="initial">Основное</button>
             </div>
 
@@ -121,32 +145,7 @@
                 </div>
             </div>
 
-            <!-- Шаг 2: Мини-уроки словацкого -->
-            <div class="tab-content" id="language-step">
-                <div class="tab-header">
-                    <h2>Мини-уроки словацкого</h2>
-                    <p>Короткий живой чат с первым базовым уроком</p>
-                </div>
-
-                <button class="action-btn secondary" onclick="goBackToCareerChat()">← Вернуться к вопросам</button>
-
-                <div class="chat-container">
-                    <div class="chat-messages" id="language-chat">
-                        <div class="message assistant">
-                            <p>Привет, я помогу тебе выучить словацкий язык, готов начать?</p>
-                        </div>
-                    </div>
-
-                    <div class="chat-input-area">
-                        <div class="input-group">
-                            <input type="text" id="language-input" class="chat-input" placeholder="Напишите: да / помоги мне начать говорить по словацки" />
-                            <button class="send-btn" onclick="sendLanguageMessage()">Отправить</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Шаг 3: Поиск работы -->
+            <!-- Шаг 2: Поиск работы -->
             <div class="tab-content" id="jobs-step">
                 <div class="tab-header">
                     <h2>Поиск работы</h2>

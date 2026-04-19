@@ -50,7 +50,9 @@ body {
 }
 
 .container.simple-mode {
-    font-size: 18px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.9;
     background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
 }
 
@@ -72,12 +74,8 @@ body {
     font-size: 15px;
 }
 
-.container.font-medium {
-    font-size: 17px;
-}
-
 .container.font-large {
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .container.theme-light {
@@ -86,6 +84,33 @@ body {
 
 .container.theme-warm {
     background: linear-gradient(135deg, #fff7f0 0%, #ffe8d9 100%);
+    color: #2f241e;
+}
+
+.container.theme-warm .screen h2,
+.container.theme-warm .screen h3,
+.container.theme-warm .screen h4,
+.container.theme-warm .tab-header h2 {
+    color: #8a3b18;
+}
+
+.container.theme-warm .screen-subtitle,
+.container.theme-warm .tab-header p,
+.container.theme-warm .problem-desc,
+.container.theme-warm .step-info p {
+    color: #5f4a3f;
+}
+
+.container.theme-warm .message.assistant p,
+.container.theme-warm .info-card,
+.container.theme-warm .checklist-card,
+.container.theme-warm .onboarding-chat,
+.container.theme-warm .chat-container,
+.container.theme-warm .problem-btn,
+.container.theme-warm .reply-btn {
+    background: #fffdfb;
+    color: #2f241e;
+    border-color: #e6cdbb;
 }
 
 .container.theme-contrast {
@@ -140,17 +165,109 @@ body {
     color: #0f172a;
 }
 
+.container.theme-contrast .screen-subtitle,
+.container.theme-contrast .tab-header p,
+.container.theme-contrast .problem-desc,
+.container.theme-contrast .step-info p {
+    color: #d1d5db;
+}
+
+.container.theme-contrast .tab-btn {
+    color: #cbd5e1;
+}
+
+.container.theme-contrast .tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+}
+
+.container.theme-contrast .tab-btn.active {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.container.theme-contrast .chat-input {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.container.theme-contrast .chat-container {
+    background: #111827;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.container.theme-contrast .chat-messages {
+    background: #111827;
+}
+
+.container.theme-contrast .chat-input-area {
+    background: #0f172a;
+    border-top-color: rgba(255, 255, 255, 0.18);
+}
+
+.container.theme-contrast .message.assistant p {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.24);
+}
+
+.container.theme-contrast .chat-input::placeholder {
+    color: #cbd5e1;
+}
+
+.container.theme-contrast .info-card li,
+.container.theme-contrast .checklist-card li {
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.container.theme-contrast.simple-mode .reply-btn,
+.container.theme-contrast.simple-mode .problem-btn,
+.container.theme-contrast.simple-mode .phrase-card,
+.container.theme-contrast.simple-mode .info-card,
+.container.theme-contrast.simple-mode .checklist-card,
+.container.theme-contrast.simple-mode .route-step,
+.container.theme-contrast.simple-mode .checkbox-item {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 .container.simple-mode h2 {
-    font-size: 32px;
+    font-size: 40px;
+    font-weight: 800;
 }
 
 .container.simple-mode p {
-    line-height: 1.8;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.9;
 }
 
 .container.simple-mode .action-btn {
-    padding: 15px 30px;
-    font-size: 16px;
+    padding: 18px 34px;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.container.simple-mode .screen-subtitle,
+.container.simple-mode .problem-title,
+.container.simple-mode .problem-desc,
+.container.simple-mode .tab-btn,
+.container.simple-mode .reply-btn,
+.container.simple-mode .send-btn,
+.container.simple-mode .chat-input,
+.container.simple-mode .message p,
+.container.simple-mode li,
+.container.simple-mode label,
+.container.simple-mode span {
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.container.simple-mode .chat-input {
+    padding: 16px 18px;
 }
 
 .container.simple-mode .reply-btn,
@@ -977,7 +1094,7 @@ body {
         font-size: 20px;
     }
 }
-}
+
 
 .tab-btn {
     flex: 1;

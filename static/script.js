@@ -23,6 +23,12 @@ function generateUserId() {
     return 'user_' + Math.random().toString(36).substr(2, 9);
 }
 
+function getThemeForMood(mood) {
+    if (mood === 'anxious') return 'warm';
+    if (mood === 'overwhelmed') return 'contrast';
+    return 'light';
+}
+
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.style.display = 'none';
@@ -78,7 +84,7 @@ function loadUserState() {
                     userState.communication = state.communication_difficulty || null;
                     userState.simpleMode = Boolean(state.simple_mode);
                     userState.themeChoice = state.theme_choice || 'light';
-                    userState.fontSize = state.font_size || 'medium';
+                    userState.fontSize = userState.simpleMode ? 'large' : 'medium';
                     applyTheme(userState.mood, userState.communication, userState.simpleMode, userState.themeChoice, userState.fontSize);
                 }
                 showScreen('screen-problem-choice');
@@ -133,24 +139,6 @@ function renderOnboardingControls(step) {
         return;
     }
 
-    if (step === 'theme') {
-        controls.innerHTML = `
-            <button class="${label}" onclick="answerOnboarding('themeChoice', 'light')">Светлая</button>
-            <button class="${label}" onclick="answerOnboarding('themeChoice', 'warm')">Теплая</button>
-            <button class="${label}" onclick="answerOnboarding('themeChoice', 'contrast')">Контрастная</button>
-        `;
-        return;
-    }
-
-    if (step === 'font') {
-        controls.innerHTML = `
-            <button class="${label}" onclick="answerOnboarding('fontSize', 'small')">Маленький</button>
-            <button class="${label}" onclick="answerOnboarding('fontSize', 'medium')">Средний</button>
-            <button class="${label}" onclick="answerOnboarding('fontSize', 'large')">Крупный</button>
-        `;
-        return;
-    }
-
     controls.innerHTML = '';
 }
 
@@ -180,8 +168,10 @@ async function answerOnboarding(step, value) {
 
     if (step === 'mood') {
         userState.mood = value;
+        userState.themeChoice = getThemeForMood(value);
         appendOnboardingMessage('user', value === 'calm' ? 'Спокойно' : value === 'anxious' ? 'Беспокойно' : 'Тяжело');
         appendOnboardingMessage('assistant', value === 'overwhelmed' ? 'Понял. Буду отвечать коротко и просто.' : 'Понял. Подстрою стиль под вас.');
+        applyTheme(userState.mood, userState.communication, userState.simpleMode, userState.themeChoice, userState.fontSize);
         renderOnboardingControls('simple_mode');
         appendOnboardingMessage('assistant', 'Нужен ли вам очень простой режим?');
         await saveOnboardingState();
@@ -190,26 +180,8 @@ async function answerOnboarding(step, value) {
 
     if (step === 'simpleMode') {
         userState.simpleMode = Boolean(value);
+        userState.fontSize = userState.simpleMode ? 'large' : 'medium';
         appendOnboardingMessage('user', value ? 'Да, нужен' : 'Нет, обычный');
-        renderOnboardingControls('theme');
-        appendOnboardingMessage('assistant', 'Какую цветовую тему выберете?');
-        await saveOnboardingState();
-        return;
-    }
-
-    if (step === 'themeChoice') {
-        userState.themeChoice = value;
-        appendOnboardingMessage('user', value === 'light' ? 'Светлая' : value === 'warm' ? 'Теплая' : 'Контрастная');
-        applyTheme(userState.mood, userState.communication, userState.simpleMode, userState.themeChoice, userState.fontSize);
-        renderOnboardingControls('font');
-        appendOnboardingMessage('assistant', 'Какой размер шрифта вам комфортнее?');
-        await saveOnboardingState();
-        return;
-    }
-
-    if (step === 'fontSize') {
-        userState.fontSize = value;
-        appendOnboardingMessage('user', value === 'small' ? 'Маленький' : value === 'medium' ? 'Средний' : 'Крупный');
         applyTheme(userState.mood, userState.communication, userState.simpleMode, userState.themeChoice, userState.fontSize);
         renderOnboardingControls('done');
         appendOnboardingMessage('assistant', 'Спасибо. Идем дальше к выбору задачи.');
@@ -218,6 +190,8 @@ async function answerOnboarding(step, value) {
         setTimeout(() => {
             showScreen('screen-problem-choice');
         }, 600);
+
+        return;
     }
 }
 
@@ -350,7 +324,7 @@ async function sendPlanMessage() {
         appendPlanChatMessage('assistant', data.message);
 
         if (data.phase === 'redirect_language') {
-            showCareerTabs('language-step');
+            showScreen('screen-language-chat');
             return;
         }
 
