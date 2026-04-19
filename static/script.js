@@ -14,9 +14,12 @@ let userState = {
     planApproved: false
 };
 
+let activeSpeechButton = null;
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
     loadUserState();
+    wireSpeechButtonsForExistingMessages();
 });
 
 function generateUserId() {
@@ -108,7 +111,7 @@ function appendOnboardingMessage(role, text, toneClass = '') {
 
     const div = document.createElement('div');
     div.className = `message ${role} ${toneClass}`.trim();
-    div.innerHTML = `<p>${escapeHtml(text)}</p>`;
+    renderMessageContent(div, role, text);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
 }
@@ -235,7 +238,7 @@ function appendPlanChatMessage(role, text) {
 
     const div = document.createElement('div');
     div.className = `message ${role}`;
-    div.innerHTML = `<p>${escapeHtml(text)}</p>`;
+    renderMessageContent(div, role, text);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
 }
@@ -455,9 +458,113 @@ function addMessageToChat(chatId, message, role) {
 
     const div = document.createElement('div');
     div.className = `message ${role}`;
-    div.innerHTML = `<p>${escapeHtml(message)}</p>`;
+    renderMessageContent(div, role, message);
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function renderMessageContent(container, role, messageText) {
+    const safeText = escapeHtml(messageText || '');
+
+    if (role === 'assistant' && !container.classList.contains('loading')) {
+        container.innerHTML = `
+            <div class="message-row">
+                <p>${safeText}</p>
+                <button type="button" class="speak-btn" aria-label="Play voice message">Speak</button>
+            </div>
+        `;
+
+        const speakBtn = container.querySelector('.speak-btn');
+        if (speakBtn) {
+            speakBtn.addEventListener('click', function() {
+                toggleSpeech(speakBtn, messageText || '');
+            });
+        }
+        return;
+    }
+
+    container.innerHTML = `<p>${safeText}</p>`;
+}
+
+function wireSpeechButtonsForExistingMessages() {
+    const assistantMessages = document.querySelectorAll('.message.assistant');
+    assistantMessages.forEach(messageEl => {
+        if (messageEl.classList.contains('loading')) return;
+        if (messageEl.querySelector('.speak-btn')) return;
+
+        const textEl = messageEl.querySelector('p');
+        if (!textEl) return;
+
+        const originalText = textEl.textContent || '';
+        renderMessageContent(messageEl, 'assistant', originalText);
+    });
+}
+
+function detectSpeechLanguage(text) {
+    const value = (text || '').trim();
+    if (!value) return 'en-US';
+
+    if (/[а-яё]/i.test(value)) {
+        return 'ru-RU';
+    }
+
+    if (/[áäčďéíĺľňóôŕšťúýž]/i.test(value) || /\b(dobry|dobry den|ahoj|dakujem|prosim|slovensky)\b/i.test(value)) {
+        return 'sk-SK';
+    }
+
+    return 'en-US';
+}
+
+function resetSpeechButton(button) {
+    if (!button) return;
+    button.classList.remove('playing');
+    button.textContent = 'Speak';
+    button.setAttribute('aria-label', 'Play voice message');
+}
+
+function stopSpeechPlayback() {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    if (activeSpeechButton) {
+        resetSpeechButton(activeSpeechButton);
+        activeSpeechButton = null;
+    }
+}
+
+function toggleSpeech(button, text) {
+    if (!('speechSynthesis' in window)) {
+        alert('Voice playback is not supported in this browser.');
+        return;
+    }
+
+    const sameButton = activeSpeechButton === button;
+    stopSpeechPlayback();
+    if (sameButton) return;
+
+    const utterance = new SpeechSynthesisUtterance(text || '');
+    utterance.lang = detectSpeechLanguage(text);
+    utterance.rate = 0.95;
+
+    activeSpeechButton = button;
+    button.classList.add('playing');
+    button.textContent = 'Stop';
+    button.setAttribute('aria-label', 'Stop voice message');
+
+    utterance.onend = function() {
+        if (activeSpeechButton === button) {
+            resetSpeechButton(button);
+            activeSpeechButton = null;
+        }
+    };
+
+    utterance.onerror = function() {
+        if (activeSpeechButton === button) {
+            resetSpeechButton(button);
+            activeSpeechButton = null;
+        }
+    };
+
+    window.speechSynthesis.speak(utterance);
 }
 
 function showLoadingMessage(chatId) {

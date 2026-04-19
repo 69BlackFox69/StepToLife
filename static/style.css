@@ -662,11 +662,13 @@ body {
 }
 
 .action-btn.secondary {
-    background: #6c757d;
+    background: #d8c8ff;
+    color: #4b2e83;
 }
 
 .action-btn.secondary:hover {
-    background: #5a6268;
+    background: #c5b0ff;
+    color: #3d236e;
 }
 
 /* ===== ВКЛАДКИ ===== */
@@ -930,6 +932,58 @@ body {
     background: white;
     color: #333;
     border: 1px solid #e0e0e0;
+}
+
+.message .message-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.message.assistant .message-row {
+    justify-content: flex-start;
+}
+
+.message.assistant .speak-btn {
+    align-self: flex-end;
+    border: 1px solid #cdd6e3;
+    background: #f6f9ff;
+    color: #1f4788;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.message.assistant .speak-btn:hover {
+    background: #e9f0ff;
+    border-color: #adc0e2;
+}
+
+.message.assistant .speak-btn.playing {
+    background: #1f4788;
+    color: #ffffff;
+    border-color: #1f4788;
+}
+
+.container.theme-contrast .message.assistant .speak-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.container.theme-contrast .message.assistant .speak-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.container.theme-contrast .message.assistant .speak-btn.playing {
+    background: #60a5fa;
+    color: #0f172a;
+    border-color: #60a5fa;
 }
 
 .message.loading p {
