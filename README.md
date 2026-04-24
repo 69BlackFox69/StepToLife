@@ -1,6 +1,19 @@
-# StepToLife - Employment Support
+# StepToLife
 
-A platform that helps users find employment in Slovakia using AI agents.
+An adaptive system for people in vulnerable situations that helps them find their way in a new environment and take things one step at a time. 
+
+> **We don’t provide information — we guide users to action.**
+
+## An Al orchestration system that adapts to the user's state and guides them through real-world actions step by step
+
+![alt text](images/image_2026-04-19_06-39-13.jpg)
+Welcome & Emotional Check-In
+
+![alt text](images/image_2026-04-19_06-44-11.png)
+Personalized Route Creation
+
+![alt text](images/image_2026-04-19_06-47-43.png)
+Real-Time Short Interview
 
 ## Features
 
@@ -152,7 +165,7 @@ Download the PDF version of the resume
 
 ## Support
 
-For questions or issues, contact the development team.
+For questions or issues, contact the development team ITCats.
 
 ## License
 
